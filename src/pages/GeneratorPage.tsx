@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; // <--- ADDED useEffect
 import {
     Printer, Settings, User, ShoppingCart, ChevronDown, ChevronUp,
-    Landmark, FileText, Upload, X, Plus, Trash2, RefreshCw,
+    Landmark, FileText, Upload, Plus, Trash2, RefreshCw,
     LayoutTemplate, Zap, Box, Shield, QrCode, Maximize2, Download, Percent, MessageSquare // <--- ADDED MessageSquare
 } from 'lucide-react';
 
@@ -159,7 +159,7 @@ export default function GeneratorPage() {
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
+            // const pdfHeight = pdf.internal.pageSize.getHeight();
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
 

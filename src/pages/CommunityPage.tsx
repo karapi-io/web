@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
+import { useState } from 'react';
+
 import {
-    Search, Filter, MessageSquare, CheckCircle2, Clock,
-    ChevronRight, X, Send, User, Bot, Plus, Tag
+    Search, MessageSquare, CheckCircle2, Clock,
+    ChevronRight, X, Send, User, Bot, Plus
 } from 'lucide-react';
 
 // ==========================================

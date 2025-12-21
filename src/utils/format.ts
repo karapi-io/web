@@ -9,5 +9,6 @@ export const formatCurrency = (amount: number) => {
 
 export const numberToWords = (num: number) => {
     // Placeholder logic. In a real app, use a library like 'number-to-words'
+    console.log('number', num)
     return "Nineteen Thousand Four Hundred And Ninety-Eight Rupees Only";
 };

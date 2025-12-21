@@ -1,5 +1,5 @@
-import React from 'react';
 import LegalPageLayout from '../components/LegalPageLayout';
+
 const PrivacyPolicy = () => {
     return (
         <LegalPageLayout title="Privacy Policy" lastUpdated="December 20, 2025">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Zap, Shield, FileText, X, Check, Gift, Code, QrCode, Minus, Plus, LayoutTemplate, Braces, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
