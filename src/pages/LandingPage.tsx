@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, Zap, Shield, FileText, X, Check, Gift, Code, QrCode, Minus, Plus, LayoutTemplate, Braces, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
+import SEO from '../components/Seo';
 // --- DATA: TEMPLATES ---
 const TEMPLATES = [
     {
@@ -218,6 +218,13 @@ export default function LandingPage() {
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900 w-full overflow-x-hidden">
+            <SEO
+                title="Free GST Invoice Generator & Invoicing API"
+                description="Generate GST-compliant invoices for free in India. No login required. Upload logo, add QR, choose templates, and download PDF instantly. Automate invoicing at scale with karAPI."
+                keywords="free gst invoice generator, gst invoice pdf, india gst invoice tool, gst invoice api, automated invoicing india"
+                url="https://karapi.io/"
+                image="https://karapi.io/karapi-logo.png"
+            />
             <TemplateModal template={selectedTemplate} onClose={() => setSelectedTemplate(null)} />
 
             {/* --- HERO SECTION --- */}
