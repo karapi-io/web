@@ -15,9 +15,9 @@ export default function Footer() {
                     </div>
                     <p className="text-sm leading-relaxed mb-6">The developer-first invoicing engine for modern Indian businesses. Built for speed, privacy, and scale.</p>
                     <div className="flex gap-4">
-                        <a href="#" className="hover:text-white transition-colors"><Twitter size={20} /></a>
+                        <a href="https://x.com/karapi_io" className="hover:text-white transition-colors"><Twitter size={20} /></a>
                         <a href="#" className="hover:text-white transition-colors"><Github size={20} /></a>
-                        <a href="#" className="hover:text-white transition-colors"><Linkedin size={20} /></a>
+                        <a href="https://linkedin.com/company/karapi" className="hover:text-white transition-colors"><Linkedin size={20} /></a>
                     </div>
                 </div>
                 <div>
