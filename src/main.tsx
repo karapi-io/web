@@ -2,10 +2,15 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { HelmetProvider } from 'react-helmet-async'; // <--- 1. Import this
+import { HelmetProvider } from 'react-helmet-async';
+
+// 1. Create the context object outside the render
+const helmetContext = {};
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HelmetProvider>
+    {/* 2. Pass it to the provider */}
+    <HelmetProvider context={helmetContext}>
       <App />
     </HelmetProvider>
   </StrictMode>,
