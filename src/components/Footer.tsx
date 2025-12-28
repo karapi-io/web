@@ -42,7 +42,7 @@ export default function Footer() {
                     <h4 className="text-white font-bold mb-6">Legal</h4>
                     <ul className="space-y-4 text-sm">
                         <li><a href="/privacy-policy" className="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
-                        <li><a href="/terms-of-service" className="hover:text-blue-400 transition-colors">Terms of Service</a></li>
+                        <li><a href="/terms-and-conditions" className="hover:text-blue-400 transition-colors">Terms and conditions</a></li>
                         <li><a href="/refund-policy" className="hover:text-blue-400 transition-colors">Refund Policy</a></li>
                         <li><a href="mailto:support@karapi.io" className="hover:text-blue-400 transition-colors flex items-center gap-2"><Mail size={14} /> Contact Us</a></li>
                     </ul>

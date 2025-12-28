@@ -2,7 +2,7 @@ import LegalPageLayout from '../components/LegalPageLayout';
 
 const TermsOfService = () => {
     return (
-        <LegalPageLayout title="Terms of Service" lastUpdated="December 20, 2025">
+        <LegalPageLayout title="Terms and Conditions" lastUpdated="December 20, 2025">
             <section>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">1. Acceptance of Terms</h2>
                 <p>

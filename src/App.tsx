@@ -26,7 +26,7 @@ const App: React.FC = () => {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/api-docs" element={<ApiDocs />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/terms-and-conditions" element={<TermsOfService />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
         </Route>
 
