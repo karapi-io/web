@@ -470,15 +470,14 @@ export default function GeneratorPage() {
                 {/* RIGHT: PREVIEW WRAPPER (Strictly hidden on mobile if view is 'editor')               */}
                 {/* ==================================================================================== */}
                 <div className={`preview-wrapper w-full lg:w-7/12 xl:w-2/3 bg-[#F8FAFC] relative flex-col items-center lg:flex ${mobileView === 'editor' ? 'hidden' : 'flex'}`}>
-                    <div className="w-full flex justify-center p-8 pb-32 lg:pb-8">
-                        <div id="invoice-preview-container" className="bg-white shadow-xl shadow-slate-200/60 w-full max-w-[794px] h-auto relative flex flex-col transition-all duration-300">
-                            {/* TEMPLATES */}
-                            {activeTemplate === 'vintage' ? <TemplateVintage data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
-                                activeTemplate === 'ecommerce' ? <TemplateEcommerce data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
-                                    activeTemplate === 'service' ? <TemplateService data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
-                                        <TemplateEvergreen data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} />
-                            }
-                        </div>
+                    <div className="w-full flex justify-center p-0 pb-32 lg:p-8">                        <div id="invoice-preview-container" className="bg-white shadow-xl shadow-slate-200/60 w-full max-w-[794px] h-auto relative flex flex-col transition-all duration-300">
+                        {/* TEMPLATES */}
+                        {activeTemplate === 'vintage' ? <TemplateVintage data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
+                            activeTemplate === 'ecommerce' ? <TemplateEcommerce data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
+                                activeTemplate === 'service' ? <TemplateService data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
+                                    <TemplateEvergreen data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} />
+                        }
+                    </div>
                     </div>
                 </div>
 
