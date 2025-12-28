@@ -3,9 +3,10 @@ import type { TemplateProps } from '../types/invoice';
 import { formatCurrency, numberToWords } from '../utils/format';
 import { InvoiceQRCode } from '../components/InvoiceQRCode';
 
-export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total }) => {
+// 1. Destructure 'isIGST'
+export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total, isIGST }) => {
 
-    // --- NEW: LOGIC TO GROUP TOTALS BY HSN ---
+    // --- LOGIC TO GROUP TOTALS BY HSN ---
     // This creates a map like: { "8517": { taxable: 1000, tax: 180 }, "9983": { ... } }
     const hsnSummary = data.items.reduce((acc, item) => {
         const hsn = item.hsn || 'General';
@@ -47,7 +48,10 @@ export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, tax
 
                 {/* Right Header */}
                 <div className="text-right">
-                    <div className="text-blue-700 font-bold text-sm uppercase mb-1">TAX INVOICE</div>
+                    {/* 2. DYNAMIC TITLE */}
+                    <div className="text-blue-700 font-bold text-sm uppercase mb-1">
+                        {data.isSellerGstRegistered ? 'TAX INVOICE' : 'INVOICE'}
+                    </div>
                     <div className="text-[9px] text-slate-500 uppercase mb-2">ORIGINAL FOR RECIPIENT</div>
                 </div>
             </div>
@@ -107,24 +111,35 @@ export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, tax
                     <div className="w-[10%] py-2 border-r border-slate-400">HSN/SAC</div>
                     <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">Rate</div>
                     <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">Qty</div>
-                    <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">IGST</div>
+
+                    {/* Dynamic Tax Header */}
+                    <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">
+                        {data.isSellerGstRegistered ? (isIGST ? 'IGST' : 'Tax') : '-'}
+                    </div>
+
                     <div className="w-[15%] py-2 text-right px-2">Amount</div>
                 </div>
 
                 {/* Rows */}
-                {data.items.map((item, idx) => (
-                    <div key={item.id} className="flex border-b border-slate-400 text-slate-800">
-                        <div className="w-[5%] py-2 border-r border-slate-400 text-center">{idx + 1}</div>
-                        <div className="w-[40%] py-2 border-r border-slate-400 px-2 font-semibold">{item.description}</div>
-                        <div className="w-[10%] py-2 border-r border-slate-400 text-center">{item.hsn}</div>
-                        <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">{formatCurrency(item.rate).replace('₹', '')}</div>
-                        <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">{item.quantity}</div>
-                        <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2 text-[9px] text-slate-500">
-                            {data.isSellerGstRegistered ? formatCurrency((item.rate * item.quantity) * 0.18).replace('₹', '') : '-'}
+                {data.items.map((item, idx) => {
+                    const itemTax = (item.rate * item.quantity) * (data.taxRate / 100);
+                    return (
+                        <div key={item.id} className="flex border-b border-slate-400 text-slate-800">
+                            <div className="w-[5%] py-2 border-r border-slate-400 text-center">{idx + 1}</div>
+                            <div className="w-[40%] py-2 border-r border-slate-400 px-2 font-semibold">{item.description}</div>
+                            <div className="w-[10%] py-2 border-r border-slate-400 text-center">{item.hsn}</div>
+                            <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">{formatCurrency(item.rate).replace('₹', '')}</div>
+                            <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2">{item.quantity}</div>
+
+                            {/* Dynamic Item Tax Cell */}
+                            <div className="w-[10%] py-2 border-r border-slate-400 text-right px-2 text-[9px] text-slate-500">
+                                {data.isSellerGstRegistered ? formatCurrency(itemTax).replace('₹', '') : '-'}
+                            </div>
+
+                            <div className="w-[15%] py-2 text-right px-2 font-bold">{formatCurrency(item.rate * item.quantity).replace('₹', '')}</div>
                         </div>
-                        <div className="w-[15%] py-2 text-right px-2 font-bold">{formatCurrency(item.rate * item.quantity).replace('₹', '')}</div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* --- TOTALS SECTION (Boxed) --- */}
@@ -142,12 +157,30 @@ export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, tax
                         <span>Taxable Amount</span>
                         <span className="font-bold">{formatCurrency(subtotal)}</span>
                     </div>
+
+                    {/* 3. DYNAMIC TAX ROWS */}
                     {data.isSellerGstRegistered && (
-                        <div className="flex justify-between p-1 px-2 border-b border-slate-400 text-slate-600">
-                            <span>Total Tax (18%)</span>
-                            <span>{formatCurrency(taxAmount)}</span>
-                        </div>
+                        <>
+                            {isIGST ? (
+                                <div className="flex justify-between p-1 px-2 border-b border-slate-400 text-slate-600">
+                                    <span>IGST ({data.taxRate}%)</span>
+                                    <span>{formatCurrency(taxAmount)}</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex justify-between p-1 px-2 border-b border-slate-400 text-slate-600">
+                                        <span>CGST ({data.taxRate / 2}%)</span>
+                                        <span>{formatCurrency(taxAmount / 2)}</span>
+                                    </div>
+                                    <div className="flex justify-between p-1 px-2 border-b border-slate-400 text-slate-600">
+                                        <span>SGST ({data.taxRate / 2}%)</span>
+                                        <span>{formatCurrency(taxAmount / 2)}</span>
+                                    </div>
+                                </>
+                            )}
+                        </>
                     )}
+
                     <div className="flex justify-between p-2 px-2 font-bold text-sm bg-slate-50">
                         <span>Grand Total</span>
                         <span>{formatCurrency(total)}</span>
@@ -169,7 +202,6 @@ export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, tax
                         </div>
                     </div>
 
-                    {/* Added QR Code here */}
                     <div className="ml-2">
                         <InvoiceQRCode upiId={data.upiId} name={data.sellerName} amount={total} />
                     </div>
@@ -221,7 +253,6 @@ export const TemplateEvergreen: React.FC<TemplateProps> = ({ data, subtotal, tax
                 </div>
             </div>
 
-            <div className="mt-2 text-[9px] text-slate-400 text-center">Page 1 / 1 &nbsp;&nbsp; This is a computer generated invoice.</div>
         </div>
     );
 };

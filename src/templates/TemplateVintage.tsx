@@ -3,9 +3,11 @@ import type { TemplateProps } from '../types/invoice';
 import { formatCurrency, numberToWords } from '../utils/format';
 import { InvoiceQRCode } from '../components/InvoiceQRCode';
 
-export const TemplateVintage: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total }) => {
+// 1. Destructure 'isIGST' from props
+export const TemplateVintage: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total, isIGST }) => {
+    console.log("isIGST", isIGST)
     return (
-        // FIX 1: Changed leading-tight to leading-normal for better text vertical spacing
+
         <div className="font-sans text-black p-8 h-full flex flex-col bg-white text-[11px] leading-normal">
 
             {/* Main Border Container */}
@@ -13,7 +15,12 @@ export const TemplateVintage: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                 {/* TOP HEADER */}
                 <div className="flex justify-between items-center border-b border-slate-400 py-2 px-3">
                     <div className="w-1/3"></div>
-                    <div className="text-blue-600 font-bold uppercase tracking-wide text-sm w-1/3 text-center">TAX INVOICE</div>
+
+                    {/* DYNAMIC TITLE */}
+                    <div className="text-blue-600 font-bold uppercase tracking-wide text-sm w-1/3 text-center">
+                        {data.isSellerGstRegistered ? 'TAX INVOICE' : 'INVOICE'}
+                    </div>
+
                     <div className="w-1/3 text-right text-[9px] text-slate-500 uppercase">ORIGINAL FOR RECIPIENT</div>
                 </div>
 
@@ -86,7 +93,6 @@ export const TemplateVintage: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                     </div>
 
                     {data.items.map((item, idx) => (
-                        // FIX 2: Increased min-height and vertical padding to prevent text touching lines
                         <div key={item.id} className="flex border-b border-slate-200 text-[10px] min-h-[45px]">
                             <div className="w-[5%] py-2 border-r border-slate-400 text-center flex items-center justify-center">{idx + 1}</div>
                             <div className="w-[35%] py-2 px-3 border-r border-slate-400 whitespace-pre-wrap font-bold flex items-center">{item.description}</div>
@@ -108,15 +114,37 @@ export const TemplateVintage: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                     <div className="w-[70%] border-r border-slate-400 p-2 flex items-center"><span className="text-[10px] font-bold">Total Items: {data.items.length}</span></div>
                     <div className="w-[30%]">
                         <div className="flex justify-between px-3 py-1 border-b border-slate-400"><span className="font-bold">Taxable Amount</span><span className="font-bold">{formatCurrency(subtotal)}</span></div>
-                        {data.isSellerGstRegistered && (<div className="flex justify-between px-3 py-1 border-b border-slate-400 text-slate-600"><span>Total Tax (18%)</span><span>{formatCurrency(taxAmount)}</span></div>)}
+
+                        {/* 3. DYNAMIC TAX LOGIC */}
+                        {data.isSellerGstRegistered && (
+                            <>
+                                {isIGST ? (
+                                    <div className="flex justify-between px-3 py-1 border-b border-slate-400 text-slate-600">
+                                        <span>IGST ({data.taxRate}%)</span>
+                                        <span>{formatCurrency(taxAmount)}</span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex justify-between px-3 py-1 border-b border-slate-400 text-slate-600">
+                                            <span>CGST ({data.taxRate / 2}%)</span>
+                                            <span>{formatCurrency(taxAmount / 2)}</span>
+                                        </div>
+                                        <div className="flex justify-between px-3 py-1 border-b border-slate-400 text-slate-600">
+                                            <span>SGST ({data.taxRate / 2}%)</span>
+                                            <span>{formatCurrency(taxAmount / 2)}</span>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )}
+
                         <div className="flex justify-between px-3 py-2 bg-slate-100 font-bold text-sm"><span>Total</span><span>{formatCurrency(total)}</span></div>
                     </div>
                 </div>
 
                 {/* FOOTER */}
-                <div className="border-b border-slate-400 p-2 bg-slate-50"><span className="font-bold text-slate-600">Total amount (in words): </span><span className="font-bold uppercase text-[9px]">INR {numberToWords(total)}</span></div>
+                <div className="border-b border-slate-400 p-2 bg-slate-50"><span className="font-bold text-slate-600">Total amount (in words): </span><span className="font-bold text-[9px]">INR {numberToWords(total)}</span></div>
 
-                {/* FIX 3: Increased padding in the footer columns to p-3 (was p-2) to push text away from vertical borders */}
                 <div className="flex flex-grow min-h-[160px]">
                     <div className="w-[40%] border-r border-slate-400 p-3 flex flex-col justify-between">
                         <div><div className="font-bold border-b border-slate-400 mb-2 pb-1">Bank Details:</div><div className="grid grid-cols-[60px_1fr] gap-y-1 text-[10px]"><div className="font-bold text-slate-600">Bank:</div><div className="font-bold uppercase">{data.bankName}</div><div className="font-bold text-slate-600">Account #:</div><div className="font-bold">{data.bankAccount}</div><div className="font-bold text-slate-600">IFSC:</div><div className="font-bold uppercase">{data.bankIfsc}</div><div className="font-bold text-slate-600">Branch:</div><div className="font-bold">{data.bankBranch}</div></div></div>

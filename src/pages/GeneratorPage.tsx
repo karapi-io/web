@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'; // <--- ADDED useEffect
+import React, { useState, useEffect } from 'react';
 import {
     Printer, Settings, User, ShoppingCart, ChevronDown, ChevronUp,
     Landmark, FileText, Upload, Plus, Trash2, RefreshCw,
-    LayoutTemplate, Zap, Box, Shield, QrCode, Maximize2, Download, Percent, MessageSquare // <--- ADDED MessageSquare
+    LayoutTemplate, Zap, Box, Shield, QrCode, Maximize2, Download, Percent, MessageSquare, HelpCircle
 } from 'lucide-react';
+
+import { INDIAN_STATES } from '../data/states';
 
 // --- LIBRARIES FOR PDF GENERATION ---
 import html2canvas from 'html2canvas';
@@ -71,36 +73,47 @@ export default function GeneratorPage() {
     const [isEdited, setIsEdited] = useState<boolean>(false);
     const [isDownloading, setIsDownloading] = useState(false);
 
+    // --- UX STATES ---
+    const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor'); // For Mobile Tabs
+
     // --- CROPPER STATE ---
     const [isCropping, setIsCropping] = useState(false);
     const [pendingImage, setPendingImage] = useState<string | null>(null);
 
-    // --- NEW: AUTO-SAVE LOGIC ---
-    // 1. Load from LocalStorage on Mount
+    // --- AUTO-SAVE LOGIC ---
     useEffect(() => {
         const saved = localStorage.getItem('invoice_data');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                setData((prev) => ({ ...prev, ...parsed })); // Merge to ensure new fields are present
+                setData((prev) => ({ ...prev, ...parsed }));
             } catch (e) {
                 console.error("Failed to load saved data");
             }
         }
     }, []);
 
-    // 2. Save to LocalStorage on Change (Debounced)
     useEffect(() => {
         const timer = setTimeout(() => {
             localStorage.setItem('invoice_data', JSON.stringify(data));
         }, 1000);
         return () => clearTimeout(timer);
     }, [data]);
-    // ---------------------------
 
+    // --- CALCULATIONS ---
     const subtotal = data.items.reduce((acc, item) => acc + (item.quantity * item.rate), 0);
     const taxAmount = data.isSellerGstRegistered ? (subtotal * data.taxRate) / 100 : 0;
     const total = subtotal + taxAmount;
+
+    // -----------------------------------------------------------
+    //  CENTRALIZED TAX CALCULATION (IGST vs CGST/SGST)
+    // -----------------------------------------------------------
+    const getCode = (str: string = '') => str ? str.split('-')[0].substring(0, 2) : '';
+    const sellerCode = getCode(data.sellerGst);
+    const buyerCode = getCode(data.placeOfSupply);
+    // Strict Boolean Check
+    const isIGST = (sellerCode !== '') && (buyerCode !== '') && (sellerCode !== buyerCode);
+    // -----------------------------------------------------------
 
     const handleTemplateChange = (template: 'vintage' | 'ecommerce' | 'service' | 'evergreen') => {
         setActiveTemplate(template);
@@ -114,15 +127,23 @@ export default function GeneratorPage() {
         }
     };
 
-    const handleInputChange = (field: keyof ExtendedInvoiceData, value: any) => { setData((prev) => ({ ...prev, [field]: value })); setIsEdited(true); };
+    const handleInputChange = (field: keyof ExtendedInvoiceData, value: any) => {
+        setData((prev) => {
+            const newData = { ...prev, [field]: value };
+            // AUTO-MAGIC: Toggle GST based on input
+            if (field === 'sellerGst') {
+                if (value === '') newData.isSellerGstRegistered = false;
+                if (value.length > 2) newData.isSellerGstRegistered = true;
+            }
+            return newData;
+        });
+        setIsEdited(true);
+    };
 
     const handleLogoStyleChange = (field: 'zoom' | 'fit', value: any) => {
         setData((prev) => ({
             ...prev,
-            logoStyle: {
-                ...prev.logoStyle!,
-                [field]: value
-            }
+            logoStyle: { ...prev.logoStyle!, [field]: value }
         }));
         setIsEdited(true);
     };
@@ -159,11 +180,9 @@ export default function GeneratorPage() {
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            // const pdfHeight = pdf.internal.pageSize.getHeight();
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
 
-            // Add image to PDF
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, (imgHeight * pdfWidth) / imgWidth);
             pdf.save(`Invoice-${data.invoiceNumber}.pdf`);
         } catch (error) {
@@ -206,7 +225,7 @@ export default function GeneratorPage() {
 
     const handleReset = () => {
         setIsEdited(false);
-        localStorage.removeItem('invoice_data'); // Clear saved data on reset
+        localStorage.removeItem('invoice_data');
         switch (activeTemplate) {
             case 'vintage': setData(DEFAULTS_VINTAGE); break;
             case 'ecommerce': setData(DEFAULTS_ECOMMERCE); break;
@@ -232,7 +251,8 @@ export default function GeneratorPage() {
             <style>{`
                 @media screen {
                     .screen-layout-only { height: 100vh; width: 100vw; overflow: hidden; }
-                    .editor-sidebar { height: 100%; overflow-y: auto; }
+                    /* Sidebar has its own scrollbar, body does not */
+                    .editor-sidebar { height: 100%; overflow-y: hidden; display: flex; flex-direction: column; } 
                     .preview-wrapper { height: 100%; overflow-y: auto; }
                 }
                 @media print {
@@ -257,7 +277,7 @@ export default function GeneratorPage() {
                         left: 0 !important;
                         width: 100% !important;
                         margin: 0 !important;
-                        padding: 0 !important;
+                        padding: 0 !important; 
                         box-shadow: none !important;
                         transform: none !important;
                     }
@@ -269,13 +289,53 @@ export default function GeneratorPage() {
             <div className="flex-1 flex overflow-hidden z-10 relative print:overflow-visible print:block">
 
                 {/* LEFT: EDITOR */}
-                <div className="editor-sidebar w-full lg:w-5/12 xl:w-1/3 bg-white border-r border-slate-200 z-20 custom-scrollbar pb-24 shadow-xl no-print">
-                    <div className="p-6 max-w-xl mx-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <div><h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Settings className="text-blue-600" size={20} /> Editor</h2></div>
-                            {isEdited && (<button onClick={handleReset} className="text-[10px] flex items-center gap-1.5 text-red-500 hover:text-red-600 font-bold bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-full transition-all border border-red-100"><RefreshCw size={10} /> Reset</button>)}
+                <div className={`editor-sidebar w-full lg:w-5/12 xl:w-1/3 bg-white border-r border-slate-200 z-20 shadow-xl no-print ${mobileView === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+
+                    {/* --- NEW: STICKY SIDEBAR HEADER --- */}
+                    {/* --- NEW: STICKY SIDEBAR HEADER --- */}
+                    <div className="p-4 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+                                <Settings size={18} />
+                            </div>
+                            <h2 className="text-lg font-bold text-slate-800">Editor</h2>
                         </div>
 
+                        <div className="flex gap-2">
+                            {/* 1. RESET BUTTON (Only shows if edited) */}
+                            {isEdited && (
+                                <button
+                                    onClick={handleReset}
+                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                    title="Reset Form"
+                                >
+                                    <RefreshCw size={18} />
+                                </button>
+                            )}
+
+                            {/* 2. PRINT BUTTON (New!) */}
+                            <button
+                                onClick={handlePrint}
+                                className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                title="Print / Save as PDF"
+                            >
+                                <Printer size={18} />
+                            </button>
+
+                            {/* 3. DOWNLOAD BUTTON */}
+                            <button
+                                onClick={handleDownloadPDF}
+                                disabled={isDownloading}
+                                className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95"
+                            >
+                                {isDownloading ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
+                                <span className="hidden sm:inline">{isDownloading ? 'Saving...' : 'Save PDF'}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* --- SCROLLABLE CONTENT --- */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 pb-32">
                         <div className="mb-6">
                             <label className="text-[10px] font-bold text-slate-400 mb-2 block uppercase tracking-wider">Choose Style</label>
                             <div className="grid grid-cols-2 gap-3">
@@ -290,33 +350,31 @@ export default function GeneratorPage() {
                             <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                                 <button onClick={() => setActiveSection(activeSection === 'details' ? '' : 'details')} className="w-full flex items-center justify-between p-3 px-4 bg-slate-50 hover:bg-slate-100 transition-colors"><span className="font-bold text-sm text-slate-700 flex items-center gap-2"><FileText size={16} className="text-slate-400" /> Invoice Meta</span>{activeSection === 'details' ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}</button>
                                 {activeSection === 'details' && (
-                                    <div className="p-4 space-y-4 border-t border-slate-100">
-
-                                        {/* --- TAX SETTINGS --- */}
+                                    <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
                                         <div className="flex items-center justify-between p-3 mb-3 bg-slate-50 rounded-lg border border-slate-200">
                                             <label className="text-xs font-bold text-slate-700">Enable GST/Tax?</label>
-                                            <input
-                                                type="checkbox"
-                                                checked={data.isSellerGstRegistered}
-                                                onChange={(e) => handleInputChange('isSellerGstRegistered', e.target.checked)}
-                                                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
-                                            />
+                                            <input type="checkbox" checked={data.isSellerGstRegistered} onChange={(e) => handleInputChange('isSellerGstRegistered', e.target.checked)} className="w-5 h-5 accent-blue-600 rounded cursor-pointer" />
                                         </div>
-
                                         {data.isSellerGstRegistered && (
-                                            <div className="mb-3">
-                                                <ModernInput
-                                                    label="Tax Rate (%)"
-                                                    type="number"
-                                                    value={data.taxRate}
-                                                    onChange={(e: any) => handleInputChange('taxRate', parseFloat(e.target.value))}
-                                                    icon={Percent}
-                                                />
-                                            </div>
+                                            <div className="mb-3"><ModernInput label="Tax Rate (%)" type="number" value={data.taxRate} onChange={(e: any) => handleInputChange('taxRate', parseFloat(e.target.value))} icon={Percent} /></div>
                                         )}
-                                        {/* ----------------------------- */}
-
-                                        <div className="grid grid-cols-2 gap-4"><ModernInput label="Invoice No" value={data.invoiceNumber} onChange={(e: any) => handleInputChange('invoiceNumber', e.target.value)} /><ModernInput label="Place of Supply" value={data.placeOfSupply} onChange={(e: any) => handleInputChange('placeOfSupply', e.target.value)} /><ModernInput label="Date" type="date" value={data.date} onChange={(e: any) => handleInputChange('date', e.target.value)} /><ModernInput label="Due Date" type="date" value={data.dueDate} onChange={(e: any) => handleInputChange('dueDate', e.target.value)} /></div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <ModernInput label="Invoice No" value={data.invoiceNumber} onChange={(e: any) => handleInputChange('invoiceNumber', e.target.value)} />
+                                            <div className="group relative">
+                                                <div className="flex items-center gap-1.5 mb-1">
+                                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Place of Supply</label>
+                                                    <HelpCircle size={12} className="text-slate-400" />
+                                                </div>
+                                                <select value={data.placeOfSupply} onChange={(e) => handleInputChange('placeOfSupply', e.target.value)} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer">
+                                                    <option value="" disabled>Select State</option>
+                                                    {INDIAN_STATES.map((state) => (
+                                                        <option key={state.code} value={`${state.code}-${state.name}`}>{state.name} ({state.code})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <ModernInput label="Date" type="date" value={data.date} onChange={(e: any) => handleInputChange('date', e.target.value)} />
+                                            <ModernInput label="Due Date" type="date" value={data.dueDate} onChange={(e: any) => handleInputChange('dueDate', e.target.value)} />
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -324,18 +382,11 @@ export default function GeneratorPage() {
                             <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                                 <button onClick={() => setActiveSection(activeSection === 'seller' ? '' : 'seller')} className="w-full flex items-center justify-between p-3 px-4 bg-slate-50 hover:bg-slate-100 transition-colors"><span className="font-bold text-sm text-slate-700 flex items-center gap-2"><Box size={16} className="text-slate-400" /> Your Details</span>{activeSection === 'seller' ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}</button>
                                 {activeSection === 'seller' && (
-                                    <div className="p-4 space-y-4 border-t border-slate-100">
+                                    <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
                                         <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg border border-dashed border-slate-300">
                                             <div className="relative group w-20 h-20 bg-white border border-slate-200 rounded-md flex items-center justify-center shadow-sm overflow-hidden shrink-0">
                                                 {data.logo ? (
-                                                    <img
-                                                        src={data.logo}
-                                                        className="w-full h-full"
-                                                        style={{
-                                                            objectFit: data.logoStyle?.fit || 'contain',
-                                                            transform: `scale(${data.logoStyle?.zoom || 1})`
-                                                        }}
-                                                    />
+                                                    <img src={data.logo} className="w-full h-full" style={{ objectFit: data.logoStyle?.fit || 'contain', transform: `scale(${data.logoStyle?.zoom || 1})` }} />
                                                 ) : (<Upload size={20} className="text-slate-400" />)}
                                                 <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                                             </div>
@@ -364,7 +415,7 @@ export default function GeneratorPage() {
                             <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                                 <button onClick={() => setActiveSection(activeSection === 'client' ? '' : 'client')} className="w-full flex items-center justify-between p-3 px-4 bg-slate-50 hover:bg-slate-100 transition-colors"><span className="font-bold text-sm text-slate-700 flex items-center gap-2"><User size={16} className="text-slate-400" /> Client Details</span>{activeSection === 'client' ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}</button>
                                 {activeSection === 'client' && (
-                                    <div className="p-4 space-y-4 border-t border-slate-100">
+                                    <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
                                         <ModernInput label="Client Name" value={data.clientName} onChange={(e: any) => handleInputChange('clientName', e.target.value)} />
                                         <ModernTextArea label="Address" value={data.clientAddress} onChange={(e: any) => handleInputChange('clientAddress', e.target.value)} />
                                         <div className="grid grid-cols-2 gap-4"><ModernInput label="GSTIN" value={data.clientGst} onChange={(e: any) => handleInputChange('clientGst', e.target.value)} /><ModernInput label="Mobile" value={data.clientMobile} onChange={(e: any) => handleInputChange('clientMobile', e.target.value)} /></div>
@@ -375,24 +426,40 @@ export default function GeneratorPage() {
                             <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                                 <button onClick={() => setActiveSection(activeSection === 'items' ? '' : 'items')} className="w-full flex items-center justify-between p-3 px-4 bg-slate-50 hover:bg-slate-100 transition-colors"><span className="font-bold text-sm text-slate-700 flex items-center gap-2"><ShoppingCart size={16} className="text-slate-400" /> Line Items</span>{activeSection === 'items' ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}</button>
                                 {activeSection === 'items' && (
-                                    <div className="p-4 space-y-4 border-t border-slate-100">
-                                        {data.items.map((item, idx) => (
-                                            <div key={item.id} className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all">
-                                                <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-200/50">
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Item #{idx + 1}</span>
-                                                    <button onClick={() => removeItem(idx)} className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"><Trash2 size={14} /></button>
+                                    <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
+
+                                        {/* --- NEW: EMPTY STATE --- */}
+                                        {data.items.length === 0 ? (
+                                            <div className="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                                                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-500">
+                                                    <ShoppingCart size={20} />
                                                 </div>
-                                                <div className="space-y-3">
-                                                    <ModernInput value={item.description} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Item Description" />
-                                                    <div className="grid grid-cols-3 gap-3">
-                                                        <ModernInput label="HSN" value={item.hsn} onChange={(e: any) => updateItem(idx, 'hsn', e.target.value)} />
-                                                        <ModernInput label="Qty" type="number" value={item.quantity} onChange={(e: any) => updateItem(idx, 'quantity', Number(e.target.value))} />
-                                                        <ModernInput label="Rate" type="number" value={item.rate} onChange={(e: any) => updateItem(idx, 'rate', Number(e.target.value))} />
-                                                    </div>
-                                                </div>
+                                                <p className="text-xs text-slate-500 font-medium mb-3">No items added yet</p>
+                                                <button onClick={addItem} className="text-xs bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 transition-all">
+                                                    Add First Item
+                                                </button>
                                             </div>
-                                        ))}
-                                        <button onClick={addItem} className="w-full py-3 border border-dashed border-slate-300 text-slate-500 rounded-xl text-sm font-bold hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all flex items-center justify-center gap-2"><Plus size={16} /> Add New Item</button>
+                                        ) : (
+                                            <>
+                                                {data.items.map((item, idx) => (
+                                                    <div key={item.id} className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all">
+                                                        <div className="flex justify-between items-center mb-2 pb-2 border-b border-slate-200/50">
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Item #{idx + 1}</span>
+                                                            <button onClick={() => removeItem(idx)} className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-50"><Trash2 size={14} /></button>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            <ModernInput value={item.description} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Item Description" />
+                                                            <div className="grid grid-cols-3 gap-3">
+                                                                <ModernInput label="HSN" value={item.hsn} onChange={(e: any) => updateItem(idx, 'hsn', e.target.value)} />
+                                                                <ModernInput label="Qty" type="number" value={item.quantity} onChange={(e: any) => updateItem(idx, 'quantity', Number(e.target.value))} />
+                                                                <ModernInput label="Rate" type="number" value={item.rate} onChange={(e: any) => updateItem(idx, 'rate', Number(e.target.value))} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                <button onClick={addItem} className="w-full py-3 border border-dashed border-slate-300 text-slate-500 rounded-xl text-sm font-bold hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all flex items-center justify-center gap-2"><Plus size={16} /> Add New Item</button>
+                                            </>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -400,14 +467,8 @@ export default function GeneratorPage() {
                             <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                                 <button onClick={() => setActiveSection(activeSection === 'bank' ? '' : 'bank')} className="w-full flex items-center justify-between p-3 px-4 bg-slate-50 hover:bg-slate-100 transition-colors"><span className="font-bold text-sm text-slate-700 flex items-center gap-2"><Landmark size={16} className="text-slate-400" /> Bank & Terms</span>{activeSection === 'bank' ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}</button>
                                 {activeSection === 'bank' && (
-                                    <div className="p-4 space-y-4 border-t border-slate-100">
-                                        <ModernInput
-                                            label="UPI ID (For QR Code)"
-                                            value={data.upiId}
-                                            onChange={(e: any) => handleInputChange('upiId', e.target.value)}
-                                            placeholder="e.g. business@okaxis"
-                                            icon={QrCode}
-                                        />
+                                    <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
+                                        <ModernInput label="UPI ID (For QR Code)" value={data.upiId} onChange={(e: any) => handleInputChange('upiId', e.target.value)} placeholder="e.g. business@okaxis" icon={QrCode} />
                                         <div className="grid grid-cols-2 gap-4"><ModernInput label="Bank Name" value={data.bankName} onChange={(e: any) => handleInputChange('bankName', e.target.value)} /><ModernInput label="Account No" value={data.bankAccount} onChange={(e: any) => handleInputChange('bankAccount', e.target.value)} /><ModernInput label="IFSC" value={data.bankIfsc} onChange={(e: any) => handleInputChange('bankIfsc', e.target.value)} /><ModernInput label="Branch" value={data.bankBranch} onChange={(e: any) => handleInputChange('bankBranch', e.target.value)} /></div>
                                         <div className="h-px bg-slate-100 my-2"></div>
                                         <ModernTextArea label="Terms & Conditions" value={data.terms} onChange={(e: any) => handleInputChange('terms', e.target.value)} height="h-24" />
@@ -418,47 +479,45 @@ export default function GeneratorPage() {
                             </div>
                         </div>
 
-                        {/* --- ACTION BUTTONS (PRINT & DOWNLOAD) --- */}
-                        <div className="mt-8 flex gap-3">
-                            <button onClick={handlePrint} className="flex-1 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20 active:scale-[0.98]">
-                                <Printer size={18} /> Print / Save PDF
-                            </button>
-                            <button onClick={handleDownloadPDF} disabled={isDownloading} className="flex-1 py-4 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]">
-                                {isDownloading ? <RefreshCw size={18} className="animate-spin" /> : <Download size={18} />}
-                                {isDownloading ? 'Generating...' : 'Download Image'}
-                            </button>
+                        {/* --- FEEDBACK BADGE --- */}
+                        <div className="mt-8 flex items-center justify-between text-[10px] text-slate-400">
+                            <div className="flex items-center gap-1"><Shield size={10} /> <span>100% Local & Private</span></div>
+                            <a href="mailto:support@karapi.io" className="hover:text-blue-500 flex items-center gap-1 transition-colors"><MessageSquare size={10} /> Feedback</a>
                         </div>
-
-                        {/* --- NEW: PRIVACY & FEEDBACK BADGE --- */}
-                        <div className="mt-4 flex items-center justify-between text-[10px] text-slate-400">
-                            <div className="flex items-center gap-1">
-                                <Shield size={10} /> <span>100% Local & Private</span>
-                            </div>
-                            <a href="mailto:support@karapi.io" className="hover:text-blue-500 flex items-center gap-1 transition-colors">
-                                <MessageSquare size={10} /> Feedback
-                            </a>
-                        </div>
-                        {/* ----------------------------------- */}
-
                     </div>
                 </div>
 
-                {/* --- RIGHT: PREVIEW WRAPPER --- */}
-                <div className="preview-wrapper hidden lg:flex w-7/12 xl:w-2/3 bg-[#F8FAFC] relative flex-col items-center">
-                    <div className="w-full flex justify-center p-8">
-                        <div
-                            id="invoice-preview-container"
-                            className="bg-white shadow-xl shadow-slate-200/60 w-full max-w-[794px] h-auto relative flex flex-col transition-all duration-300"
-                        >
-                            {activeTemplate === 'vintage' ? <TemplateVintage data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} /> :
-                                activeTemplate === 'ecommerce' ? <TemplateEcommerce data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} /> :
-                                    activeTemplate === 'service' ? <TemplateService data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} /> :
-                                        <TemplateEvergreen data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} />
+                {/* --- RIGHT: PREVIEW WRAPPER (Now conditional on mobile) --- */}
+                <div className={`preview-wrapper w-full lg:w-7/12 xl:w-2/3 bg-[#F8FAFC] relative flex-col items-center ${mobileView === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
+                    <div className="w-full flex justify-center p-8 pb-32 lg:pb-8">
+                        <div id="invoice-preview-container" className="bg-white shadow-xl shadow-slate-200/60 w-full max-w-[794px] h-auto relative flex flex-col transition-all duration-300">
+                            {activeTemplate === 'vintage' ? <TemplateVintage data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
+                                activeTemplate === 'ecommerce' ? <TemplateEcommerce data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
+                                    activeTemplate === 'service' ? <TemplateService data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
+                                        <TemplateEvergreen data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} />
                             }
                         </div>
                     </div>
                 </div>
+
             </div>
+
+            {/* --- NEW: MOBILE TOGGLE BAR --- */}
+            <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 backdrop-blur-md text-white p-1.5 rounded-full shadow-2xl flex gap-1 items-center border border-slate-700/50">
+                <button
+                    onClick={() => setMobileView('editor')}
+                    className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${mobileView === 'editor' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+                >
+                    <Settings size={14} /> Editor
+                </button>
+                <button
+                    onClick={() => setMobileView('preview')}
+                    className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${mobileView === 'preview' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+                >
+                    <FileText size={14} /> Preview
+                </button>
+            </div>
+
             <SupportWidget />
         </div>
     );

@@ -1,10 +1,10 @@
-// src/templates/TemplateService.tsx
 import React from 'react';
 import type { TemplateProps } from '../types/invoice';
 import { formatCurrency, numberToWords } from '../utils/format';
-import { InvoiceQRCode } from '../components/InvoiceQRCode'; // <--- IMPORT
+import { InvoiceQRCode } from '../components/InvoiceQRCode';
 
-export const TemplateService: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total }) => {
+// 1. Destructure 'isIGST'
+export const TemplateService: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total, isIGST }) => {
     return (
         <div className="font-sans text-slate-800 p-8 h-auto flex flex-col bg-white text-[11px] leading-snug relative">
 
@@ -24,7 +24,10 @@ export const TemplateService: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                     </div>
                 </div>
                 <div className="text-right">
-                    <div className="text-blue-900 font-bold uppercase text-lg mb-1">TAX INVOICE</div>
+                    {/* 2. DYNAMIC TITLE */}
+                    <div className="text-blue-900 font-bold uppercase text-lg mb-1">
+                        {data.isSellerGstRegistered ? 'TAX INVOICE' : 'INVOICE'}
+                    </div>
                     <div className="font-bold text-slate-900 text-sm">#{data.invoiceNumber}</div>
                 </div>
             </div>
@@ -88,7 +91,6 @@ export const TemplateService: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                         <span className="font-bold text-slate-500">Branch:</span> <span className="font-semibold">{data.bankBranch}</span>
                     </div>
 
-                    {/* QR Code Section */}
                     <div className="mt-2">
                         <InvoiceQRCode
                             upiId={data.upiId}
@@ -101,12 +103,33 @@ export const TemplateService: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                 {/* Right: Totals */}
                 <div className="w-[45%]">
                     <div className="flex justify-between mb-1"><span className="text-slate-600">Taxable Amount</span><span className="font-bold">{formatCurrency(subtotal)}</span></div>
+
+                    {/* 3. DYNAMIC TAX ROWS START HERE */}
                     {data.isSellerGstRegistered && (
                         <>
-                            <div className="flex justify-between mb-1 text-slate-600"><span>CGST 9.0%</span><span>{formatCurrency(taxAmount / 2)}</span></div>
-                            <div className="flex justify-between mb-2 text-slate-600"><span>SGST 9.0%</span><span>{formatCurrency(taxAmount / 2)}</span></div>
+                            {isIGST ? (
+                                // Case A: Inter-State (IGST)
+                                <div className="flex justify-between mb-1 text-slate-600">
+                                    <span>IGST ({data.taxRate}%)</span>
+                                    <span>{formatCurrency(taxAmount)}</span>
+                                </div>
+                            ) : (
+                                // Case B: Intra-State (CGST + SGST)
+                                <>
+                                    <div className="flex justify-between mb-1 text-slate-600">
+                                        <span>CGST ({data.taxRate / 2}%)</span>
+                                        <span>{formatCurrency(taxAmount / 2)}</span>
+                                    </div>
+                                    <div className="flex justify-between mb-2 text-slate-600">
+                                        <span>SGST ({data.taxRate / 2}%)</span>
+                                        <span>{formatCurrency(taxAmount / 2)}</span>
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
+                    {/* DYNAMIC TAX ROWS END */}
+
                     <div className="flex justify-between bg-blue-50 border-t-2 border-blue-800 py-2 px-2 text-base font-bold text-blue-900 mt-2">
                         <span>Total</span>
                         <span>{formatCurrency(total)}</span>
@@ -131,9 +154,7 @@ export const TemplateService: React.FC<TemplateProps> = ({ data, subtotal, taxAm
                 </div>
             </div>
 
-            <div className="mt-4 text-[9px] text-slate-400 text-center border-t border-slate-100 pt-2">
-                This is a computer generated invoice.
-            </div>
+
         </div>
     );
 };

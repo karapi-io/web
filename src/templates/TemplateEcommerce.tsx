@@ -4,14 +4,18 @@ import type { TemplateProps } from '../types/invoice';
 import { formatCurrency, numberToWords } from '../utils/format';
 import { InvoiceQRCode } from '../components/InvoiceQRCode';
 
-export const TemplateEcommerce: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total }) => {
+// 1. Destructure 'isIGST'
+export const TemplateEcommerce: React.FC<TemplateProps> = ({ data, subtotal, taxAmount, total, isIGST }) => {
     return (
         <div className="font-sans text-slate-900 p-8 h-auto bg-white text-[11px] leading-snug">
 
             {/* HEADER */}
             <div className="flex justify-between items-start mb-6">
                 <div className="w-1/2">
-                    <div className="text-blue-700 font-bold uppercase text-sm mb-2">TAX INVOICE</div>
+                    {/* 2. DYNAMIC TITLE */}
+                    <div className="text-blue-700 font-bold uppercase text-sm mb-2">
+                        {data.isSellerGstRegistered ? 'TAX INVOICE' : 'INVOICE'}
+                    </div>
                     <div className="font-bold text-lg mb-1">{data.sellerName}</div>
                     <div className="font-bold mb-1">GSTIN {data.sellerGst}</div>
                     <div className="text-slate-600 whitespace-pre-line mb-1 max-w-xs">{data.sellerAddress}</div>
@@ -64,17 +68,25 @@ export const TemplateEcommerce: React.FC<TemplateProps> = ({ data, subtotal, tax
                         </tr>
                     </thead>
                     <tbody>
-                        {data.items.map((item, idx) => (
-                            <tr key={item.id} className="border-b border-slate-100">
-                                <td className="py-2 align-top text-slate-600 pl-2">{idx + 1}</td>
-                                <td className="py-2 align-top"><div className="font-bold text-slate-900">{item.description}</div><div className="text-[9px] text-slate-400">HSN: {item.hsn}</div></td>
-                                <td className="py-2 align-top text-right font-bold">{formatCurrency(item.rate).replace('₹', '')}</td>
-                                <td className="py-2 align-top text-right text-slate-600">{item.quantity}</td>
-                                <td className="py-2 align-top text-right text-slate-600">{formatCurrency(item.rate * item.quantity).replace('₹', '')}</td>
-                                <td className="py-2 align-top text-right text-slate-500">{data.isSellerGstRegistered ? formatCurrency((item.rate * item.quantity) * 0.18).replace('₹', '') : '-'}</td>
-                                <td className="py-2 align-top text-right font-bold text-slate-900 pr-2">{formatCurrency((item.rate * item.quantity) * 1.18).replace('₹', '')}</td>
-                            </tr>
-                        ))}
+                        {data.items.map((item, idx) => {
+                            // FIX: Use dynamic tax rate instead of hardcoded 0.18
+                            const itemTax = (item.rate * item.quantity) * (data.taxRate / 100);
+                            const itemTotal = (item.rate * item.quantity) + (data.isSellerGstRegistered ? itemTax : 0);
+
+                            return (
+                                <tr key={item.id} className="border-b border-slate-100">
+                                    <td className="py-2 align-top text-slate-600 pl-2">{idx + 1}</td>
+                                    <td className="py-2 align-top"><div className="font-bold text-slate-900">{item.description}</div><div className="text-[9px] text-slate-400">HSN: {item.hsn}</div></td>
+                                    <td className="py-2 align-top text-right font-bold">{formatCurrency(item.rate).replace('₹', '')}</td>
+                                    <td className="py-2 align-top text-right text-slate-600">{item.quantity}</td>
+                                    <td className="py-2 align-top text-right text-slate-600">{formatCurrency(item.rate * item.quantity).replace('₹', '')}</td>
+                                    <td className="py-2 align-top text-right text-slate-500">
+                                        {data.isSellerGstRegistered ? formatCurrency(itemTax).replace('₹', '') : '-'}
+                                    </td>
+                                    <td className="py-2 align-top text-right font-bold text-slate-900 pr-2">{formatCurrency(itemTotal).replace('₹', '')}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
@@ -83,7 +95,30 @@ export const TemplateEcommerce: React.FC<TemplateProps> = ({ data, subtotal, tax
             <div className="flex justify-end mb-4 break-inside-avoid">
                 <div className="w-1/3">
                     <div className="flex justify-between mb-1 text-slate-600 font-bold"><span>Taxable</span><span>{formatCurrency(subtotal)}</span></div>
-                    {data.isSellerGstRegistered && (<div className="flex justify-between mb-2 text-slate-600 font-bold"><span>IGST 18%</span><span>{formatCurrency(taxAmount)}</span></div>)}
+
+                    {/* 3. DYNAMIC TAX ROWS */}
+                    {data.isSellerGstRegistered && (
+                        <>
+                            {isIGST ? (
+                                <div className="flex justify-between mb-2 text-slate-600 font-bold">
+                                    <span>IGST ({data.taxRate}%)</span>
+                                    <span>{formatCurrency(taxAmount)}</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex justify-between mb-1 text-slate-600 font-bold">
+                                        <span>CGST ({data.taxRate / 2}%)</span>
+                                        <span>{formatCurrency(taxAmount / 2)}</span>
+                                    </div>
+                                    <div className="flex justify-between mb-2 text-slate-600 font-bold">
+                                        <span>SGST ({data.taxRate / 2}%)</span>
+                                        <span>{formatCurrency(taxAmount / 2)}</span>
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    )}
+
                     <div className="flex justify-between border-t border-b border-slate-900 py-2 text-lg font-bold text-slate-900"><span>Total</span><span>{formatCurrency(total)}</span></div>
                 </div>
             </div>
@@ -93,14 +128,12 @@ export const TemplateEcommerce: React.FC<TemplateProps> = ({ data, subtotal, tax
             {/* FOOTER */}
             <div className="flex justify-between items-start pt-2 break-inside-avoid">
                 <div className="flex gap-8 items-start">
-                    {/* QR CODE - Shows only if UPI ID is present */}
                     <InvoiceQRCode
                         upiId={data.upiId}
                         name={data.sellerName}
                         amount={total}
                     />
 
-                    {/* Bank Details - Aligned with QR text using mt-4 pt-3 */}
                     <div className="text-slate-800 mt-4 pt-3">
                         <div className="font-bold mb-2">Bank Details:</div>
                         <div className="grid grid-cols-[50px_1fr] gap-y-1 text-[10px]">

@@ -46,6 +46,7 @@ export interface TemplateProps {
     subtotal: number;
     taxAmount: number;
     total: number;
+    isIGST: boolean;
 }
 
 // src/types/invoice.ts
