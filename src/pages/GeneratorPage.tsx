@@ -251,8 +251,8 @@ export default function GeneratorPage() {
             <style>{`
                 @media screen {
                     .screen-layout-only { height: 100vh; width: 100vw; overflow: hidden; }
-                    /* Sidebar has its own scrollbar, body does not */
-                    .editor-sidebar { height: 100%; overflow-y: hidden; display: flex; flex-direction: column; } 
+                    /* FIX: Removed display:flex here so Tailwind classes work */
+                    .editor-sidebar { height: 100%; overflow-y: hidden; } 
                     .preview-wrapper { height: 100%; overflow-y: auto; }
                 }
                 @media print {
@@ -288,46 +288,25 @@ export default function GeneratorPage() {
 
             <div className="flex-1 flex overflow-hidden z-10 relative print:overflow-visible print:block">
 
-                {/* LEFT: EDITOR */}
-                <div className={`editor-sidebar w-full lg:w-5/12 xl:w-1/3 bg-white border-r border-slate-200 z-20 shadow-xl no-print ${mobileView === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+                {/* ==================================================================================== */}
+                {/* LEFT: EDITOR (Strictly hidden on mobile if view is 'preview')                        */}
+                {/* ==================================================================================== */}
+                <div className={`editor-sidebar w-full lg:w-5/12 xl:w-1/3 bg-white border-r border-slate-200 z-20 shadow-xl no-print flex-col h-full lg:flex ${mobileView === 'preview' ? 'hidden' : 'flex'}`}>
 
-                    {/* --- NEW: STICKY SIDEBAR HEADER --- */}
-                    {/* --- NEW: STICKY SIDEBAR HEADER --- */}
-                    <div className="p-4 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex justify-between items-center">
+                    {/* --- STICKY SIDEBAR HEADER --- */}
+                    <div className="p-4 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex justify-between items-center shrink-0">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
                                 <Settings size={18} />
                             </div>
                             <h2 className="text-lg font-bold text-slate-800">Editor</h2>
                         </div>
-
                         <div className="flex gap-2">
-                            {/* 1. RESET BUTTON (Only shows if edited) */}
                             {isEdited && (
-                                <button
-                                    onClick={handleReset}
-                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-                                    title="Reset Form"
-                                >
-                                    <RefreshCw size={18} />
-                                </button>
+                                <button onClick={handleReset} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Reset Form"><RefreshCw size={18} /></button>
                             )}
-
-                            {/* 2. PRINT BUTTON (New!) */}
-                            <button
-                                onClick={handlePrint}
-                                className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
-                                title="Print / Save as PDF"
-                            >
-                                <Printer size={18} />
-                            </button>
-
-                            {/* 3. DOWNLOAD BUTTON */}
-                            <button
-                                onClick={handleDownloadPDF}
-                                disabled={isDownloading}
-                                className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95"
-                            >
+                            <button onClick={handlePrint} className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Print / Save as PDF"><Printer size={18} /></button>
+                            <button onClick={handleDownloadPDF} disabled={isDownloading} className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95">
                                 {isDownloading ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
                                 <span className="hidden sm:inline">{isDownloading ? 'Saving...' : 'Save PDF'}</span>
                             </button>
@@ -487,10 +466,13 @@ export default function GeneratorPage() {
                     </div>
                 </div>
 
-                {/* --- RIGHT: PREVIEW WRAPPER (Now conditional on mobile) --- */}
-                <div className={`preview-wrapper w-full lg:w-7/12 xl:w-2/3 bg-[#F8FAFC] relative flex-col items-center ${mobileView === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
+                {/* ==================================================================================== */}
+                {/* RIGHT: PREVIEW WRAPPER (Strictly hidden on mobile if view is 'editor')               */}
+                {/* ==================================================================================== */}
+                <div className={`preview-wrapper w-full lg:w-7/12 xl:w-2/3 bg-[#F8FAFC] relative flex-col items-center lg:flex ${mobileView === 'editor' ? 'hidden' : 'flex'}`}>
                     <div className="w-full flex justify-center p-8 pb-32 lg:pb-8">
                         <div id="invoice-preview-container" className="bg-white shadow-xl shadow-slate-200/60 w-full max-w-[794px] h-auto relative flex flex-col transition-all duration-300">
+                            {/* TEMPLATES */}
                             {activeTemplate === 'vintage' ? <TemplateVintage data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
                                 activeTemplate === 'ecommerce' ? <TemplateEcommerce data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
                                     activeTemplate === 'service' ? <TemplateService data={data} subtotal={subtotal} taxAmount={taxAmount} total={total} isIGST={isIGST} /> :
