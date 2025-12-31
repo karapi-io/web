@@ -11,7 +11,7 @@ interface SEOProps {
 
 const SEO: React.FC<SEOProps> = ({
     title,
-    description = "Generate 100% GST-compliant invoices for free. Automate billing with our Developer API. Perfect for Indian freelancers and startups.",
+    description = "Generate 100% GST - compliant invoices for free in India.Automate billing with our developer- friendly API—built for freelancers, startups, and developers",
     keywords = "GST invoice generator, free invoice maker India, GST API, e-invoice api, automated billing",
     url = "https://karapi.io",
     image = "https://karapi.io/og-image.jpg" // You should upload a screenshot of your app to public folder
