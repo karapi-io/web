@@ -67,6 +67,7 @@ const FAQS = [
 ];
 
 // --- COMPONENT: TYPEWRITER TEXT ---
+// Replace your existing TypewriterText component with this:
 const TypewriterText = () => {
     const phrases = ["Modern Indian Tech 🇮🇳.", "Freelancers 💻.", "SaaS Startups 🚀.", "Agencies 🎨."];
     const [text, setText] = useState('');
@@ -87,7 +88,8 @@ const TypewriterText = () => {
         return () => clearTimeout(timer);
     }, [text, isDeleting, loopNum, typingSpeed, phrases]);
 
-    return <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 block sm:inline h-[1.2em] sm:h-auto">{text}<span className="animate-pulse text-blue-400">|</span></span>;
+    // Changed: Darker gradient (blue-600 to purple-600) for better contrast on white
+    return <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 block sm:inline h-[1.2em] sm:h-auto">{text}<span className="animate-pulse text-blue-600">|</span></span>;
 };
 
 // --- COMPONENT: THUMBNAIL CARD ---
@@ -246,49 +248,140 @@ export default function LandingPage() {
             <TemplateModal template={selectedTemplate} onClose={() => setSelectedTemplate(null)} />
 
             {/* --- HERO SECTION --- */}
-            <section className="w-full bg-[#0F172A] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[400px] md:w-[800px] h-[400px] md:h-[800px] bg-blue-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-600/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+            <section className="w-full bg-white relative overflow-hidden border-b border-slate-200">
+                {/* Background Effects */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50 via-white to-white"></div>
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
-                <div className="w-full px-4 md:px-12 lg:px-28 pt-12 md:pt-16 pb-16 md:pb-24 relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[auto] lg:min-h-[90vh]">
-                    {/* LEFT: Text Content */}
+                <div className="absolute top-0 right-0 w-[400px] md:w-[800px] h-[400px] md:h-[800px] bg-blue-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-400/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+
+                <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-8 pt-12 md:pt-16 pb-16 md:pb-24 relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center lg:min-h-[90vh]">
+
+                    {/* LEFT: TEXT */}
                     <div className="space-y-6 md:space-y-8 flex flex-col justify-center z-20 text-center lg:text-left">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-900/50 border border-blue-700/50 text-blue-300 text-[10px] md:text-xs font-bold uppercase tracking-widest w-fit shadow-lg shadow-blue-900/10 mx-auto lg:mx-0"><span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shadow-[0_0_12px_rgba(59,130,246,0.8)]"></span>2025 GST Compliant</div>
 
-                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-[1.15] tracking-tight drop-shadow-sm">
-                            Invoicing for <br />
-                            <TypewriterText />
+                        {/* Badge */}
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] md:text-xs font-bold uppercase tracking-widest w-fit shadow-sm mx-auto lg:mx-0">
+                            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                            2025 GST Compliant
+                        </div>
+
+                        {/* ✅ FIXED RESPONSIVE H1 */}
+                        <h1
+                            className="font-extrabold text-slate-900 tracking-tight leading-[1.1]
+                   text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-4"
+                        >
+                            GST Invoicing for{" "}
+                            <span className="block sm:inline">
+                                Indian SaaS & Businesses
+                            </span>
                         </h1>
 
-                        <p className="text-base md:text-xl text-slate-400 max-w-lg leading-relaxed mx-auto lg:mx-0">
-                            Create GST invoices manually for free.
-                            <br className="hidden md:block" />
-                            Configure once and automate invoicing at scale with <span className="font-semibold text-slate-300">karAPI</span>.
+                        {/* Typewriter Line */}
+                        <p className="text-lg md:text-xl font-semibold text-blue-600">
+                            Built for <TypewriterText />
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
-                            <Link to="/gst-invoice-generator" className="flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-blue-500 transition shadow-xl shadow-blue-900/25 group">Generate Free GST Invoice <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></Link>
-                            <Link to="/api-docs" className="flex items-center justify-center gap-2 px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg text-white border border-slate-700 hover:bg-white/5 hover:border-slate-600 transition gap-3"><Code size={20} className="text-blue-400" />   Automate with API →</Link>
+                        {/* Subtext */}
+                        <p className="text-base md:text-xl text-slate-600 max-w-lg leading-relaxed mx-auto lg:mx-0">
+                            The ultimate free GST invoice generator for India. Switch to our API to automate high-volume invoicing in minutes.
+                        </p>
+
+                        {/* CTAs */}
+                        <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start w-full">
+
+                            {/* Primary CTA */}
+                            <Link
+                                to="/gst-invoice-generator"
+                                className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-blue-700 transition shadow-xl shadow-blue-600/20 group whitespace-nowrap"
+                            >
+                                Generate Free GST Invoice
+                                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                            </Link>
+
+                            {/* Secondary CTA */}
+                            <Link
+                                to="/api-docs"
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition whitespace-nowrap"
+                            >
+                                <Code size={20} className="text-blue-600" />
+                                Automate with API →
+                            </Link>
                         </div>
+
+                        {/* Trust Signals */}
+                        <p className="text-xs text-slate-500 mt-2">
+                            ✓ No signup required • ✓ GST compliant • ✓ PDF & QR supported
+                        </p>
                     </div>
-                    {/* RIGHT: Visual (Hidden on small mobile, visible on desktop) */}
+
+                    {/* RIGHT: VISUAL */}
                     <div className="relative hidden lg:flex justify-center perspective-1000 animate-slide-in-right z-10">
                         <div className="relative w-[400px] mx-auto">
+
                             <div className="relative transform hover:-translate-y-2 transition-transform duration-500 z-10">
-                                <div className="relative bg-slate-900/40 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl ring-1 ring-white/10 overflow-hidden"><img src="https://getswipe.azureedge.net/getswipe/images/templates/small/temp-1.webp" alt="Modern Invoice Template" className="w-full h-auto rounded-lg shadow-inner opacity-95 bg-white" /></div>
-                                {/* Floating Elements */}
-                                <div className="absolute -top-16 -left-16 w-[300px] bg-[#1E293B] p-4 rounded-xl shadow-2xl border border-slate-600 shadow-blue-900/20 transform -rotate-2 opacity-95 z-30 animate-[float_7s_ease-in-out_infinite]">
-                                    <div className="flex gap-1.5 mb-3 border-b border-slate-800 pb-2"><div className="w-2.5 h-2.5 rounded-full bg-red-500"></div><div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div><div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span className="ml-auto text-[10px] text-slate-500 font-mono">POST /generate</span></div>
-                                    <div className="font-mono text-[10px] text-slate-300 leading-relaxed"><div><span className="text-purple-400">const</span> <span className="text-blue-400">pdf</span> = <span className="text-yellow-300">await</span> api.create({'{'}</div><div className="pl-4"><span className="text-blue-300">template</span>: <span className="text-orange-300">"modern"</span>,</div><div className="pl-4"><span className="text-blue-300">gst</span>: <span className="text-orange-300">true</span>,</div><div className="pl-4"><span className="text-blue-300">items</span>: [...]</div><div>{'}'});</div><div className="mt-1 text-emerald-500 text-[9px]">// ⚡️ Created in 120ms</div></div>
+
+                                {/* Invoice */}
+                                <div className="relative bg-white/60 backdrop-blur-xl border border-white/60 p-2 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] ring-1 ring-slate-900/5 overflow-hidden">
+                                    <img
+                                        src="https://getswipe.azureedge.net/getswipe/images/templates/small/temp-1.webp"
+                                        alt="Sample GST Invoice PDF"
+                                        className="w-full h-auto rounded-lg shadow-sm bg-white"
+                                    />
                                 </div>
-                                <div className="absolute top-12 -right-20 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl border border-slate-100 flex items-center gap-3 animate-[float_4s_ease-in-out_infinite] z-20"><div className="bg-red-100 p-1.5 rounded-lg text-red-600"><FileText size={18} /></div><div><div className="text-[8px] font-bold text-slate-400 leading-none uppercase">Format</div><div className="text-xs font-bold text-slate-800 leading-tight">PDF Ready</div></div></div>
-                                <div className="absolute bottom-16 -left-12 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl border border-slate-100 flex items-center gap-3 animate-[float_5s_ease-in-out_infinite_reverse] z-20"><div className="bg-emerald-100 p-1.5 rounded-full text-emerald-600"><Check size={18} strokeWidth={3} /></div><div><div className="text-[8px] font-bold text-slate-400 leading-none uppercase">Status</div><div className="text-xs font-bold text-slate-800 leading-tight">GST Verified</div></div></div>
-                                <div className="absolute bottom-24 -right-16 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl border border-slate-100 flex items-center gap-3 animate-[float_6s_ease-in-out_infinite] z-20"><div className="bg-blue-100 p-1.5 rounded-lg text-blue-600"><QrCode size={18} /></div><div><div className="text-[8px] font-bold text-slate-400 leading-none uppercase">Payment</div><div className="text-xs font-bold text-slate-800 leading-tight">QR Active</div></div></div>
+
+                                {/* Code Card */}
+                                <div className="absolute -top-16 -left-16 w-[300px] bg-[#1E293B] p-4 rounded-xl shadow-2xl border border-slate-700 shadow-slate-900/20 transform -rotate-2 opacity-95 z-30 animate-[float_7s_ease-in-out_infinite]">
+                                    <div className="flex gap-1.5 mb-3 border-b border-slate-700 pb-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                                        <span className="ml-auto text-[10px] text-slate-500 font-mono">
+                                            POST /generate
+                                        </span>
+                                    </div>
+                                    <div className="font-mono text-[10px] text-slate-300 leading-relaxed">
+                                        <div><span className="text-purple-400">const</span> <span className="text-blue-400">pdf</span> = <span className="text-yellow-300">await</span> api.create({'{'}</div>
+                                        <div className="pl-4"><span className="text-blue-300">template</span>: <span className="text-orange-300">"modern"</span>,</div>
+                                        <div className="pl-4"><span className="text-blue-300">gst</span>: <span className="text-orange-300">true</span>,</div>
+                                        <div className="pl-4"><span className="text-blue-300">items</span>: [...]</div>
+                                        <div>{'}'});</div>
+                                        <div className="mt-1 text-emerald-500 text-[9px]">// ⚡ Created in 120ms</div>
+                                    </div>
+                                </div>
+
+                                {/* Feature Chips */}
+                                <div className="absolute top-12 -right-20 bg-white/95 p-3 rounded-xl shadow border border-slate-100 flex items-center gap-3 animate-[float_4s_ease-in-out_infinite] z-20">
+                                    <div className="bg-red-50 p-1.5 rounded-lg text-red-600"><FileText size={18} /></div>
+                                    <div>
+                                        <div className="text-[8px] font-bold text-slate-400 uppercase">Format</div>
+                                        <div className="text-xs font-bold text-slate-900">PDF Ready</div>
+                                    </div>
+                                </div>
+
+                                <div className="absolute bottom-16 -left-12 bg-white/95 p-3 rounded-xl shadow border border-slate-100 flex items-center gap-3 animate-[float_5s_ease-in-out_infinite_reverse] z-20">
+                                    <div className="bg-emerald-50 p-1.5 rounded-full text-emerald-600"><Check size={18} strokeWidth={3} /></div>
+                                    <div>
+                                        <div className="text-[8px] font-bold text-slate-400 uppercase">Status</div>
+                                        <div className="text-xs font-bold text-slate-900">GST Verified</div>
+                                    </div>
+                                </div>
+
+                                <div className="absolute bottom-24 -right-16 bg-white/95 p-3 rounded-xl shadow border border-slate-100 flex items-center gap-3 animate-[float_6s_ease-in-out_infinite] z-20">
+                                    <div className="bg-blue-50 p-1.5 rounded-lg text-blue-600"><QrCode size={18} /></div>
+                                    <div>
+                                        <div className="text-[8px] font-bold text-slate-400 uppercase">Payment</div>
+                                        <div className="text-xs font-bold text-slate-900">QR Active</div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             {/* --- FEATURES GRID (FREE TOOL) --- */}
             <section className="w-full bg-white py-16 md:py-24 px-4 md:px-12 lg:px-20 border-b border-slate-100">
