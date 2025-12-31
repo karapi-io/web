@@ -384,46 +384,75 @@ export default function LandingPage() {
 
 
             {/* --- FEATURES GRID (FREE TOOL) --- */}
-            <section className="w-full bg-white py-16 md:py-24 px-4 md:px-12 lg:px-20 border-b border-slate-100">
+            {/* --- FEATURES GRID (Refined UI) --- */}
+            <section className="w-full bg-slate-50 py-16 md:py-24 px-4 md:px-12 lg:px-20 border-b border-slate-200">
                 <div className="max-w-7xl mx-auto">
+
+                    {/* Header Section */}
                     <div className="text-center mb-12 md:mb-16 max-w-2xl mx-auto">
                         <div className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-3">Free Tools</div>
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">More than just an API. <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">The Ultimate Free Generator.</span></h2>
-                        <p className="text-slate-500 text-base md:text-lg mb-6">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">
+                            More than just an API. <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                                The Ultimate Free Generator.
+                            </span>
+                        </h2>
+                        <p className="text-slate-500 text-base md:text-lg mb-8 leading-relaxed">
                             A professional-grade manual GST invoice generator for freelancers and small teams.
-                            When you need bulk invoicing, automation, or custom templates, switch to <span className="font-semibold">karAPI</span>.
+                            When you need bulk invoicing, automation, or custom templates, switch to <span className="font-semibold text-slate-900">karAPI</span>.
                         </p>
-                        <Link to="/gst-invoice-generator" className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition shadow-lg hover:-translate-y-1">Try Generator Now <ArrowRight size={16} /></Link>
+                        <Link to="/gst-invoice-generator" className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-slate-800 transition shadow-xl shadow-slate-900/10 hover:-translate-y-1">
+                            Try Generator Now <ArrowRight size={16} />
+                        </Link>
                     </div>
+
+                    {/* Grid Section */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                        <div className="group bg-slate-50 hover:bg-white p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10">
-                            <div className="bg-white group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-100 w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-colors shadow-sm">
-                                <QrCode className="text-slate-400 group-hover:text-blue-500 transition-colors" size={24} />
+
+                        {/* Card 1: Smart Payments (Blue) */}
+                        <div className="group bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center md:items-start text-center md:text-left">
+                            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-blue-100">
+                                <QrCode className="text-blue-600" size={26} />
                             </div>
-                            <h3 className="font-bold text-lg text-slate-900 mb-2">Smart Payments</h3>
-                            <p className="text-slate-500 text-sm leading-relaxed">Auto-generate <span className="font-bold text-slate-700">UPI QR Codes</span>. Just enter your VPA and get paid instantly.</p>
+                            <h3 className="font-bold text-xl text-slate-900 mb-3">Smart Payments</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                Auto-generate <span className="font-semibold text-slate-700">UPI QR Codes</span>. Just enter your VPA and get paid instantly.
+                            </p>
                         </div>
-                        <div className="group bg-slate-50 hover:bg-white p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-emerald-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10">
-                            <div className="bg-white group-hover:bg-emerald-50 border border-slate-200 group-hover:border-emerald-100 w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-colors shadow-sm">
-                                <Shield className="text-slate-400 group-hover:text-emerald-500 transition-colors" size={24} />
+
+                        {/* Card 2: 100% Private (Emerald) */}
+                        <div className="group bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center md:items-start text-center md:text-left">
+                            <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-emerald-100">
+                                <Shield className="text-emerald-600" size={26} />
                             </div>
-                            <h3 className="font-bold text-lg text-slate-900 mb-2">100% Private</h3>
-                            <p className="text-slate-500 text-sm leading-relaxed">No login required. Your data is processed locally in your browser and <span className="font-bold text-slate-700">never stored</span>.</p>
+                            <h3 className="font-bold text-xl text-slate-900 mb-3">100% Private</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                No login required. Your data is processed locally in your browser and <span className="font-semibold text-slate-700">never stored</span>.
+                            </p>
                         </div>
-                        <div className="group bg-slate-50 hover:bg-white p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-amber-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10">
-                            <div className="bg-white group-hover:bg-amber-50 border border-slate-200 group-hover:border-amber-100 w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-colors shadow-sm">
-                                <FileText className="text-slate-400 group-hover:text-amber-500 transition-colors" size={24} />
+
+                        {/* Card 3: GST Intelligence (Amber) */}
+                        <div className="group bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center md:items-start text-center md:text-left">
+                            <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-amber-100">
+                                <FileText className="text-amber-600" size={26} />
                             </div>
-                            <h3 className="font-bold text-lg text-slate-900 mb-2">GST Intelligence</h3>
-                            <p className="text-slate-500 text-sm leading-relaxed">Automatic calculation of <span className="font-bold text-slate-700">CGST, SGST, IGST</span> & HSN Summaries for Indian businesses.</p>
+                            <h3 className="font-bold text-xl text-slate-900 mb-3">GST Intelligence</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                Automatic calculation of <span className="font-semibold text-slate-700">CGST, SGST, IGST</span> & HSN Summaries for India.
+                            </p>
                         </div>
-                        <div className="group bg-slate-50 hover:bg-white p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/10">
-                            <div className="bg-white group-hover:bg-purple-50 border border-slate-200 group-hover:border-purple-100 w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-colors shadow-sm">
-                                <Zap className="text-slate-400 group-hover:text-purple-500 transition-colors" size={24} />
+
+                        {/* Card 4: Rich Features (Purple) */}
+                        <div className="group bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center md:items-start text-center md:text-left">
+                            <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-purple-100">
+                                <Zap className="text-purple-600" size={26} />
                             </div>
-                            <h3 className="font-bold text-lg text-slate-900 mb-2">Rich Features</h3>
-                            <p className="text-slate-500 text-sm leading-relaxed">Includes <span className="font-bold text-slate-700">Logo Cropper</span>, Vector PDF download, and Amount in Words automation.</p>
+                            <h3 className="font-bold text-xl text-slate-900 mb-3">Rich Features</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                Includes <span className="font-semibold text-slate-700">Logo Cropper</span>, Vector PDF download, and Amount in Words.
+                            </p>
                         </div>
+
                     </div>
                 </div>
             </section>
@@ -523,13 +552,13 @@ export default function LandingPage() {
             </section>
 
             {/* --- STATS STRIP --- */}
-            <section className="w-full bg-white border-b border-slate-100 shadow-sm relative z-20">
+            {/* <section className="w-full bg-white border-b border-slate-100 shadow-sm relative z-20">
                 <div className="w-full px-4 md:px-12 lg:px-20 py-8 md:py-12 flex flex-wrap justify-center md:justify-between gap-6 md:gap-8 text-slate-500 font-bold uppercase tracking-widest text-xs md:text-sm">
                     <span className="flex items-center gap-2"><span className="text-lg md:text-xl">👩‍💻</span> Used by 500+ Developers</span><span className="hidden md:block text-slate-300">•</span>
                     <span className="flex items-center gap-2"><span className="text-lg md:text-xl">🧾</span> 10k+ Invoices Generated</span><span className="hidden md:block text-slate-300">•</span>
                     <span className="flex items-center gap-2"><span className="text-lg md:text-xl">⚡️</span> 99.99% API Uptime</span>
                 </div>
-            </section>
+            </section> */}
 
             {/* --- FAQ SECTION --- */}
             <section className="w-full bg-white py-16 md:py-24 px-4 md:px-12 lg:px-20">
