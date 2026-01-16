@@ -315,13 +315,13 @@
 body {
   @apply bg-slate-50 antialiased text-slate-900;
   /* ADD THIS LINE BELOW: */
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   width: 100%;
 }
 
 /* Ensure the root element also behaves */
 #root {
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   width: 100%;
 }
 

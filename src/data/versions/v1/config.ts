@@ -4,6 +4,6 @@ export const V1_CONFIG = {
     label: "v1",
     description: "Current stable version",
     status: "stable" as const,
-    endpoint: "https://dev.api.karapi.io/invoice/v1/generate",
+    endpoint: "https://api.karapi.io/invoice/v1/generate",
     apiKeyUrl: "#", // Replace with actual URL when available
 };

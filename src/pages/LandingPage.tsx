@@ -3,6 +3,7 @@ import { ArrowRight, Zap, Shield, FileText, X, Check, Gift, Code, QrCode, Minus,
 import { Link } from 'react-router-dom';
 import SEO from '../components/Seo';
 
+
 // --- DATA: TEMPLATES ---
 const TEMPLATES = [
     {
@@ -67,7 +68,6 @@ const FAQS = [
 ];
 
 // --- COMPONENT: TYPEWRITER TEXT ---
-// Replace your existing TypewriterText component with this:
 const TypewriterText = () => {
     const phrases = ["Modern Indian Tech 🇮🇳.", "Freelancers 💻.", "SaaS Startups 🚀.", "Agencies 🎨."];
     const [text, setText] = useState('');
@@ -88,16 +88,14 @@ const TypewriterText = () => {
         return () => clearTimeout(timer);
     }, [text, isDeleting, loopNum, typingSpeed, phrases]);
 
-    // Changed: Darker gradient (blue-600 to purple-600) for better contrast on white
     return <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 block sm:inline h-[1.2em] sm:h-auto">{text}<span className="animate-pulse text-blue-600">|</span></span>;
 };
 
 // --- COMPONENT: THUMBNAIL CARD ---
-const TemplateThumbnail = ({ template, onClick }: { template: any, onClick: () => void }) => {
+const TemplateThumbnail = ({ template, onClick }: { template: typeof TEMPLATES[0], onClick: () => void }) => {
     return (
         <div
             onClick={onClick}
-            // Mobile: Full width but constrained max-width. Desktop: Fixed width.
             className="w-full max-w-[280px] sm:w-[240px] h-[340px] bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden relative hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:border-transparent relative z-0 before:absolute before:inset-0 before:-z-10 before:rounded-xl before:bg-gradient-to-r before:from-blue-400 before:via-purple-400 before:to-blue-400 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:-m-[2px]"
         >
             <div className="h-[290px] w-full bg-slate-50/50 overflow-hidden relative flex items-center justify-center rounded-t-xl">
@@ -135,7 +133,6 @@ const CodeTerminal = () => {
                     <button onClick={() => setActiveTab('buffer')} className={`px-3 py-1 rounded-md transition-all ${activeTab === 'buffer' ? 'bg-blue-600 text-white shadow-sm' : 'hover:text-slate-200'}`}>output.pdf</button>
                 </div>
             </div>
-            {/* Added overflow-x-auto for mobile scrolling of code */}
             <div className="p-4 md:p-6 font-mono text-xs md:text-sm leading-relaxed overflow-x-auto whitespace-pre">
                 {activeTab === 'json' ? (
                     <div className="text-blue-300">
@@ -202,12 +199,11 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 
 
 // --- COMPONENT: MODAL ---
-const TemplateModal = ({ template, onClose }: { template: any, onClose: () => void }) => {
+const TemplateModal = ({ template, onClose }: { template: typeof TEMPLATES[0] | null, onClose: () => void }) => {
     if (!template) return null;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-900/70 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200" onClick={onClose}>
-            {/* Mobile: Bottom Sheet style, Desktop: Modal style */}
             <div className="bg-white w-full max-w-5xl h-[85vh] md:h-auto md:max-h-[95vh] rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-300 border border-slate-200" onClick={(e) => e.stopPropagation()}>
 
                 <button onClick={onClose} className="absolute top-3 right-3 p-2 bg-white/80 hover:bg-slate-100 rounded-full text-slate-500 transition-colors z-20 backdrop-blur-md"><X size={20} /></button>
@@ -234,7 +230,7 @@ const TemplateModal = ({ template, onClose }: { template: any, onClose: () => vo
 
 // --- MAIN LANDING PAGE ---
 export default function LandingPage() {
-    const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+    const [selectedTemplate, setSelectedTemplate] = useState<typeof TEMPLATES[0] | null>(null);
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900 w-full overflow-x-hidden">
@@ -246,7 +242,6 @@ export default function LandingPage() {
                 image="https://karapi.io/karapi-logo.png"
             />
             <TemplateModal template={selectedTemplate} onClose={() => setSelectedTemplate(null)} />
-
             {/* --- HERO SECTION --- */}
             <section className="w-full bg-white relative overflow-hidden border-b border-slate-200">
                 {/* Background Effects */}
@@ -256,7 +251,7 @@ export default function LandingPage() {
                 <div className="absolute top-0 right-0 w-[400px] md:w-[800px] h-[400px] md:h-[800px] bg-blue-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-400/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 
-                <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-8 pt-12 md:pt-16 pb-16 md:pb-24 relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center lg:min-h-[90vh]">
+                <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-8 pt-12 md:pt-16 pb-16 md:pb-24 relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center lg:min-h-[85vh]">
 
                     {/* LEFT: TEXT */}
                     <div className="space-y-6 md:space-y-8 flex flex-col justify-center z-20 text-center lg:text-left">
@@ -267,11 +262,7 @@ export default function LandingPage() {
                             2025 GST Compliant
                         </div>
 
-                        {/* ✅ FIXED RESPONSIVE H1 */}
-                        <h1
-                            className="font-extrabold text-slate-900 tracking-tight leading-[1.1]
-                   text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-4"
-                        >
+                        <h1 className="font-extrabold text-slate-900 tracking-tight leading-[1.1] text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-4">
                             GST Invoicing for{" "}
                             <span className="block sm:inline">
                                 Indian SaaS & Businesses
@@ -302,11 +293,11 @@ export default function LandingPage() {
 
                             {/* Secondary CTA */}
                             <Link
-                                to="/api-docs"
+                                to="/get-api-key"
                                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition whitespace-nowrap"
                             >
                                 <Code size={20} className="text-blue-600" />
-                                Automate with API →
+                                Get Free API Key →
                             </Link>
                         </div>
 
@@ -384,7 +375,6 @@ export default function LandingPage() {
 
 
             {/* --- FEATURES GRID (FREE TOOL) --- */}
-            {/* --- FEATURES GRID (Refined UI) --- */}
             <section className="w-full bg-slate-50 py-16 md:py-24 px-4 md:px-12 lg:px-20 border-b border-slate-200">
                 <div className="max-w-7xl mx-auto">
 
@@ -479,14 +469,12 @@ export default function LandingPage() {
                     </div>
 
                     <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
-                        {/* Wrapper to allow horizontal scrolling on mobile */}
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left min-w-[600px]">
                                 <thead className="bg-slate-50 border-b border-slate-200">
                                     <tr>
                                         <th className="p-4 font-bold text-slate-700 w-1/3">Feature</th>
                                         <th className="p-4 text-center font-bold text-slate-500 w-1/3">Free Tool</th>
-                                        {/* Highlighted Header */}
                                         <th className="p-4 text-center font-bold text-blue-700 bg-blue-50/80 w-1/3">
                                             karAPI
                                         </th>
@@ -507,13 +495,11 @@ export default function LandingPage() {
                                         <tr key={feature} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="p-4 font-medium text-slate-700">{feature}</td>
                                             <td className="p-4 text-center text-slate-500">{free}</td>
-                                            {/* Highlighted Cell */}
                                             <td className="p-4 text-center font-semibold text-slate-900 bg-blue-50/30">
                                                 {api}
                                             </td>
                                         </tr>
                                     ))}
-                                    {/* Call to Action Row */}
                                     <tr className="bg-slate-50/50">
                                         <td className="p-4"></td>
                                         <td className="p-4 text-center">
@@ -522,7 +508,7 @@ export default function LandingPage() {
                                             </Link>
                                         </td>
                                         <td className="p-4 text-center bg-blue-50/30">
-                                            <Link to="/api-docs" className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all hover:-translate-y-0.5">
+                                            <Link to="/get-api-key" className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all hover:-translate-y-0.5">
                                                 Get API Key
                                             </Link>
                                         </td>
@@ -551,15 +537,6 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* --- STATS STRIP --- */}
-            {/* <section className="w-full bg-white border-b border-slate-100 shadow-sm relative z-20">
-                <div className="w-full px-4 md:px-12 lg:px-20 py-8 md:py-12 flex flex-wrap justify-center md:justify-between gap-6 md:gap-8 text-slate-500 font-bold uppercase tracking-widest text-xs md:text-sm">
-                    <span className="flex items-center gap-2"><span className="text-lg md:text-xl">👩‍💻</span> Used by 500+ Developers</span><span className="hidden md:block text-slate-300">•</span>
-                    <span className="flex items-center gap-2"><span className="text-lg md:text-xl">🧾</span> 10k+ Invoices Generated</span><span className="hidden md:block text-slate-300">•</span>
-                    <span className="flex items-center gap-2"><span className="text-lg md:text-xl">⚡️</span> 99.99% API Uptime</span>
-                </div>
-            </section> */}
-
             {/* --- FAQ SECTION --- */}
             <section className="w-full bg-white py-16 md:py-24 px-4 md:px-12 lg:px-20">
                 <div className="max-w-3xl mx-auto">
@@ -574,6 +551,32 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            {/* --- FINAL CTA --- */}
+            <section className="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-16 md:py-24 px-4 md:px-12 lg:px-20">
+                <div className="max-w-4xl mx-auto text-center text-white">
+                    <h2 className="text-3xl md:text-4xl font-extrabold mb-6">Ready to Automate Your Invoicing?</h2>
+                    <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+                        Join hundreds of developers building modern billing systems with karAPI.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link
+                            to="/get-api-key"
+                            className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-xl"
+                        >
+                            Get Free API Key
+                            <ArrowRight size={20} />
+                        </Link>
+                        <Link
+                            to="/api-docs"
+                            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-lg text-white border-2 border-white/30 hover:bg-white/10 transition-colors"
+                        >
+                            Read the Docs
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
         </div>
     );
 }

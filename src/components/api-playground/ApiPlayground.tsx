@@ -10,7 +10,7 @@ import { CodeSnippets } from "./CodeSnippets";
 import { Documentation } from "./Documentation";
 import { useApiVersion } from "../../hook/useApiVersion";
 import type { OutputType, InvoiceType } from "../../types/api";
-
+import { Link } from "react-router-dom";
 export function ApiPlayground() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [viewMode, setViewMode] = useState<"playground" | "docs">("playground");
@@ -193,12 +193,10 @@ export function ApiPlayground() {
                                     </div>
                                     <div className="flex items-center gap-1 mt-2">
                                         <span className="text-xs text-muted-foreground">Don't have a key?</span>
-                                        <a
-                                            href={apiKeyUrl}
-                                            className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
-                                        >
+
+                                        <Link to="/get-api-key" className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5">
                                             Get free API key <ArrowRight size={12} />
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
 
