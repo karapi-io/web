@@ -8,11 +8,11 @@ import ToolLayout from './layouts/ToolLayout';
 // Pages
 import LandingPage from './pages/LandingPage';
 import CommunityPage from './pages/CommunityPage';
-import ApiDocs from './pages/ApiDocs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import RefundPolicy from './pages/RefundPolicy';
 import GeneratorPage from './pages/GeneratorPage';
+import { ApiPlayground } from './components/api-playground/ApiPlayground';
 // import ContactUs from './pages/ContactUs';
 
 const App: React.FC = () => {
@@ -24,7 +24,7 @@ const App: React.FC = () => {
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/community" element={<CommunityPage />} />
-          <Route path="/api-docs" element={<ApiDocs />} />
+          <Route path="/api-docs" element={<ApiPlayground />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-and-conditions" element={<TermsOfService />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
