@@ -21,6 +21,8 @@ export interface Template {
     tags: string[];
     description: string;
     badge?: string;
+    pricing?: string;
+    category?: string;
 }
 
 // Output Format Option

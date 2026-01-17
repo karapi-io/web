@@ -453,9 +453,23 @@ export default function LandingPage() {
                     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Templates for Every Business ✨</h2>
                     <p className="text-slate-600 text-base md:text-lg">Professional designs. Ready in seconds.</p>
                 </div>
-                <div className="max-w-[1400px] mx-auto px-6 flex flex-wrap justify-center gap-6 md:gap-8">
-                    {TEMPLATES.map((tmpl, idx) => (<TemplateThumbnail key={idx} template={tmpl} onClick={() => setSelectedTemplate(tmpl)} />))}
+
+                <div className="max-w-[1400px] mx-auto px-6 flex flex-wrap justify-center gap-6 md:gap-8 mb-16">
+                    {TEMPLATES.map((tmpl, idx) => (
+                        <TemplateThumbnail key={idx} template={tmpl} onClick={() => setSelectedTemplate(tmpl)} />
+                    ))}
                 </div>
+
+                {/* View More Templates Button */}
+                <div className="flex justify-center px-4">
+
+
+                    <Link to="/templates" className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-slate-800 transition shadow-xl shadow-slate-900/10 hover:-translate-y-1">
+                        View More Templates<ArrowRight size={16} />
+                    </Link>
+                </div>
+
+
             </section>
 
             {/* --- COMPARISON SECTION (Mobile Optimized) --- */}

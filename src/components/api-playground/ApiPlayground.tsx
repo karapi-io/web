@@ -3,7 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Play, Key, ArrowRight, Menu, X, FileJson,
-    Eye, EyeOff, Sparkles, Zap, CheckCircle2,
+    Eye, EyeOff, Sparkles, Zap,
     PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronUp, Code2,
     Braces
 } from "lucide-react";

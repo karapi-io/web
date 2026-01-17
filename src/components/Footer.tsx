@@ -45,8 +45,8 @@ export default function Footer() {
                 <div>
                     <h4 className="text-white font-bold mb-4 md:mb-6">Resources</h4>
                     <ul className="space-y-3 text-sm text-slate-400">
-                        <li><Link to="/docs" className="hover:text-blue-400 transition-colors">Documentation</Link></li>
-                        <li><a href="#" className="hover:text-blue-400 transition-colors">API Reference</a></li>
+                        <li><Link to="/templates" className="hover:text-blue-400 transition-colors">Templates</Link></li>
+                        <li><a href="/community" className="hover:text-blue-400 transition-colors">community</a></li>
                         <li><a href="#" className="hover:text-blue-400 transition-colors flex items-center justify-center md:justify-start gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             System Status
