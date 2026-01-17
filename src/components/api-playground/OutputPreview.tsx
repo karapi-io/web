@@ -1,5 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Link, AlertCircle, Loader2, Download, ExternalLink, Copy, Check } from "lucide-react";
+import {
+    FileText, Link, AlertCircle, Loader2, Download,
+    ExternalLink, Copy, Check, Code, Eye
+} from "lucide-react";
 import { useState, useMemo } from "react";
 
 interface OutputPreviewProps {
@@ -31,6 +34,7 @@ function convertHtmlData(data: string): string {
 
 export function OutputPreview({ isLoading, error, response }: OutputPreviewProps) {
     const [copied, setCopied] = useState(false);
+    const [viewMode, setViewMode] = useState<"preview" | "json">("preview"); // New State for Toggle
 
     const handleCopyLink = async () => {
         if (response?.type === "json" && response.json?.url) {
@@ -41,10 +45,36 @@ export function OutputPreview({ isLoading, error, response }: OutputPreviewProps
     };
 
     return (
-        <div className="h-full flex flex-col bg-muted/30 relative">
-            {/* Status Bar */}
-            <div className="absolute top-4 right-4 z-10">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-elevated border border-border shadow-sm text-xs font-medium">
+        <div className="h-full flex flex-col bg-muted/30 relative overflow-hidden">
+            {/* Header / Status Bar */}
+            <div className="absolute top-4 right-4 z-10 flex items-center gap-3">
+
+                {/* View Toggle - Only show when we have a response */}
+                {response && !isLoading && !error && (
+                    <div className="flex p-1 bg-surface-elevated border border-border rounded-lg shadow-sm">
+                        <button
+                            onClick={() => setViewMode("preview")}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${viewMode === "preview"
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                }`}
+                        >
+                            <Eye size={14} /> Preview
+                        </button>
+                        <button
+                            onClick={() => setViewMode("json")}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${viewMode === "json"
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                }`}
+                        >
+                            <Code size={14} /> JSON
+                        </button>
+                    </div>
+                )}
+
+                {/* Status Badge */}
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-elevated border border-border shadow-sm text-xs font-medium backdrop-blur-sm">
                     <div className={`w-2 h-2 rounded-full ${isLoading ? "bg-warning animate-pulse" :
                         error ? "bg-destructive" :
                             response ? "bg-success" :
@@ -59,21 +89,61 @@ export function OutputPreview({ isLoading, error, response }: OutputPreviewProps
                 </div>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 flex items-center justify-center p-6">
+            {/* Content Area */}
+            <div className="flex-1 flex items-center justify-center p-6 min-h-0 overflow-hidden">
                 <AnimatePresence mode="wait">
                     {isLoading ? (
                         <LoadingState key="loading" />
                     ) : error ? (
                         <ErrorState key="error" message={error} />
                     ) : response ? (
-                        <ResponseView key="response" response={response} copied={copied} onCopy={handleCopyLink} />
+                        viewMode === "preview" ? (
+                            <ResponseView key="response-preview" response={response} copied={copied} onCopy={handleCopyLink} />
+                        ) : (
+                            <JsonView key="response-json" response={response} />
+                        )
                     ) : (
                         <EmptyState key="empty" />
                     )}
                 </AnimatePresence>
             </div>
         </div>
+    );
+}
+
+// New Component to display Raw JSON
+function JsonView({ response }: { response: any }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyJson = async () => {
+        await navigator.clipboard.writeText(JSON.stringify(response, null, 2));
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="w-full h-full flex flex-col bg-surface-elevated rounded-xl border border-border overflow-hidden shadow-sm"
+        >
+            <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
+                <span className="text-xs font-mono text-muted-foreground">response.json</span>
+                <button
+                    onClick={handleCopyJson}
+                    className="p-1.5 hover:bg-background rounded-md text-muted-foreground hover:text-foreground transition-colors"
+                    title="Copy JSON"
+                >
+                    {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                </button>
+            </div>
+            <div className="flex-1 overflow-auto p-4 bg-zinc-950/5 dark:bg-zinc-950/50">
+                <pre className="text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap break-all">
+                    {JSON.stringify(response, null, 2)}
+                </pre>
+            </div>
+        </motion.div>
     );
 }
 
@@ -190,15 +260,15 @@ function ResponseView({
             className="w-full h-full flex flex-col"
         >
             {response.type === "binary" && binaryUrl && (
-                <div className="flex-1 flex flex-col gap-4">
+                <div className="flex-1 flex flex-col gap-4 min-h-0">
                     <div className="flex-1 rounded-xl border border-border overflow-hidden bg-surface-elevated shadow-lg">
                         <iframe src={binaryUrl} className="w-full h-full" title="PDF Preview" />
                     </div>
-                    <div className="flex justify-center">
+                    <div className="flex justify-center shrink-0">
                         <a
                             href={binaryUrl}
                             download="invoice.pdf"
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm"
                         >
                             <Download size={16} />
                             Download PDF
@@ -223,7 +293,7 @@ function ResponseView({
                         <p className="text-sm text-muted-foreground mb-4">Your invoice is hosted and ready to share</p>
 
                         <div className="bg-muted rounded-lg p-3 flex items-center gap-2">
-                            <code className="flex-1 text-sm font-mono text-foreground truncate">
+                            <code className="flex-1 text-sm font-mono text-foreground truncate max-w-[250px]">
                                 {response.json.url || JSON.stringify(response.json)}
                             </code>
                             <button

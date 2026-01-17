@@ -476,19 +476,6 @@ export function ApiPlayground() {
                                 <div className="w-full h-full flex flex-col bg-background/50 rounded-2xl border border-border/50 shadow-sm overflow-hidden backdrop-blur-sm">
                                     <div className="flex-1 relative">
                                         <OutputPreview isLoading={isLoading} error={error} response={response} />
-
-                                        <AnimatePresence>
-                                            {response && !isLoading && !error && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                    exit={{ opacity: 0 }}
-                                                    className="absolute top-4 right-4 z-10 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold shadow-sm backdrop-blur-md"
-                                                >
-                                                    <CheckCircle2 size={14} /> Generated Successfully
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
                                     </div>
                                 </div>
                             </div>
