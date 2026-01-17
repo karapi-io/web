@@ -4,7 +4,7 @@ import type { Template, OutputFormat } from "../../../types/api";
 export const V1_TEMPLATES: Template[] = [
     {
         id: 'service',
-        title: 'service 🏢',
+        title: 'Service 🏢',
         name: 'service',
         img: 'https://getswipe.azureedge.net/getswipe/images/templates/small/temp-1.webp',
         tags: ['MNCs', 'Consulting', 'B2B'],
@@ -12,47 +12,38 @@ export const V1_TEMPLATES: Template[] = [
         badge: 'Popular',
     },
     {
-        id: 'retail',
-        title: 'Retail 🛍️',
-        name: 'Retail',
+        id: 'ecom',
+        title: 'Ecommerce 🛍️',
+        name: 'ecom',
         img: 'https://getswipe.azureedge.net/getswipe/images/templates/small/temp-10.webp',
         tags: ['Supermarket', 'POS', 'Fast Moving'],
         description: 'Optimized for high-volume line items. Compact layout ensures you fit more products on a single page.',
         badge: 'Fast',
     },
     {
-        id: 'minimal',
-        title: 'Minimal ✨',
-        name: 'Minimal',
+        id: 'vintage',
+        title: 'Vintage 🎨',
+        name: 'Vintage',
         img: 'https://getswipe.azureedge.net/getswipe/images/templates/small/temp-7.webp',
         tags: ['Freelancers', 'Designers', 'Clean'],
         description: 'Less is more. A distraction-free layout that puts the focus entirely on the work delivered.',
         badge: 'Simple',
     },
     {
-        id: 'agency',
-        title: 'Agency 🎨',
-        name: 'Agency',
+        id: 'Evergreen',
+        title: 'Evergreen 🎨',
+        name: 'evergreen',
         img: 'https://getswipe.azureedge.net/getswipe/images/templates/small/temp-14.webp',
         tags: ['Creative', 'Social Media', 'Bold'],
         description: 'Stand out with vibrant headers and a layout that screams creativity. Perfect for digital agencies.',
         badge: 'Creative',
     },
-    {
-        id: 'modern',
-        title: 'SaaS 🚀',
-        name: 'SaaS',
-        img: 'https://getswipe.azureedge.net/getswipe/images/templates/small/temp-13.webp',
-        tags: ['Tech', 'Startups', 'Subscriptions'],
-        description: 'High contrast, bold typography, and clear hierarchy. The preferred choice for modern tech companies.',
-        badge: 'New',
-    }
 ];
 
 // V1 Sample Payloads for each template
 export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
-    'corporate': {
-        template: "corporate",
+    'service': {
+        template: "service",
         invoice: {
             invoiceNumber: "INV-1021",
             date: "2026-01-06",
@@ -97,8 +88,8 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
         },
         output: "binary"
     },
-    'retail': {
-        template: "retail",
+    'ecom': {
+        template: "ecom",
         invoice: {
             invoiceNumber: "RET-5001",
             date: "2026-01-06",
@@ -124,8 +115,8 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
         },
         output: "binary"
     },
-    'minimal': {
-        template: "minimal",
+    'vintage': {
+        template: "vintage",
         invoice: {
             invoiceNumber: "INV-2001",
             date: "2026-01-06",
@@ -157,8 +148,8 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
         },
         output: "binary"
     },
-    'agency': {
-        template: "agency",
+    'evergreen': {
+        template: "evergreen",
         invoice: {
             invoiceNumber: "AGN-3001",
             date: "2026-01-06",
@@ -186,33 +177,6 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
         },
         output: "binary"
     },
-    'modern': {
-        template: "modern",
-        invoice: {
-            invoiceNumber: "SAAS-4001",
-            date: "2026-01-06",
-            dueDate: "2026-01-06",
-            currency: "USD",
-            seller: {
-                name: "CloudStack Inc",
-                address: "100 Tech Drive, Seattle, WA",
-                email: "billing@cloudstack.io",
-                isGstRegistered: false,
-                useInitialAsLogo: true
-            },
-            client: {
-                name: "Acme Startup",
-                email: "accounts@acme-startup.com"
-            },
-            items: [
-                { description: "Pro Plan Subscription (Annual)", rate: 1188, quantity: 1 },
-                { description: "Additional Seats (5)", rate: 300, quantity: 5 },
-                { description: "Priority Support Add-on", rate: 500, quantity: 1 }
-            ],
-            notes: "Auto-renews annually. Cancel anytime."
-        },
-        output: "binary"
-    }
 };
 
 // V1 Bill of Supply payload (non-GST)

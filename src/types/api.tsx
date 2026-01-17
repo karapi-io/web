@@ -36,6 +36,9 @@ export interface ApiResponse {
     url?: string;
     html?: string;
     json?: any;
+    mimeType?: string;
+    encoding?: string;
+    data?: string;
 }
 
 // Version Status
