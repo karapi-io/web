@@ -69,7 +69,7 @@ export default function Navbar() {
                                 </Link>
                                 <Link
                                     to="/playground"
-                                    className={`flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all ${isActive('/api-playground')
+                                    className={`flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all ${isActive('/playground')
                                         ? "bg-blue-50 text-blue-600"
                                         : "text-slate-600 hover:text-blue-600 hover:bg-blue-50"
                                         }`}
@@ -141,8 +141,8 @@ export default function Navbar() {
                                     <span className="font-medium">Free Generator</span>
                                 </Link>
                                 <Link
-                                    to="/api-playground"
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-colors ${isActive('/api-playground') ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
+                                    to="/playground"
+                                    className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-colors ${isActive('/playground') ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
                                         }`}
                                 >
                                     <div className="p-2 bg-white border border-slate-200 rounded-lg shadow-sm">
