@@ -84,6 +84,7 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
                 ifsc: "HDFC0000123",
                 branch: "Bangalore"
             },
+            upiId: "testupi@icici",
             notes: "Payment due within 30 days"
         },
         output: "binary"
@@ -91,26 +92,40 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
     'ecom': {
         template: "ecom",
         invoice: {
-            invoiceNumber: "RET-5001",
+            invoiceNumber: "INV-1021",
             date: "2026-01-06",
+            dueDate: "2026-01-15",
+            placeOfSupply: "Maharashtra",
             currency: "INR",
+            taxRate: 18,
             seller: {
                 name: "QuickMart Retail",
                 address: "MG Road, Bangalore",
                 mobile: "9876543210",
                 email: "pos@quickmart.in",
                 isGstRegistered: true,
-                gst: "29XXXXX1234X1Z5"
+                gst: "29XXXXX1234X1Z5",
+                logo: "https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/fkheaderlogo_exploreplus-11f9e2.svg"
             },
             client: {
-                name: "Walk-in Customer",
-                mobile: "9000000000"
+                name: "Prashant Pathak",
+                address: "BKC, Mumbai, Maharashtra",
+                state: "Maharashtra",
+                mobile: "9123456789",
+                gst: "26ABCDE5678F1Z2"
             },
             items: [
                 { description: "Milk 1L", rate: 60, quantity: 2, hsn: "0401", taxRate: 5 },
                 { description: "Bread", rate: 45, quantity: 1, hsn: "1905", taxRate: 5 },
                 { description: "Eggs (12pc)", rate: 90, quantity: 1, hsn: "0407", taxRate: 0 }
             ],
+            bank: {
+                name: "HDFC Bank",
+                account: "1234567890",
+                ifsc: "HDFC0000123",
+                branch: "Bangalore"
+            },
+            upiId: "quickmart@upi",
             notes: "Thank you for shopping!"
         },
         output: "binary"
@@ -133,6 +148,7 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
             client: {
                 name: "Startup Inc",
                 address: "Mumbai, India",
+                state: "Maharashtra",
                 mobile: "9123456789"
             },
             items: [
@@ -144,36 +160,55 @@ export const V1_TEMPLATE_PAYLOADS: Record<string, object> = {
                 account: "9876543210",
                 ifsc: "ICIC0000456"
             },
+            upiId: "prashant@upi",
             notes: "Thank you for your business"
         },
         output: "binary"
     },
     'evergreen': {
-        template: "evergreen",
+        template: "service",
         invoice: {
-            invoiceNumber: "AGN-3001",
+            invoiceNumber: "INV-1021",
             date: "2026-01-06",
-            dueDate: "2026-01-20",
-            currency: "USD",
+            dueDate: "2026-01-15",
+            placeOfSupply: "Maharashtra",
+            currency: "INR",
             seller: {
-                name: "Pixel Perfect Agency",
-                address: "Creative Hub, San Francisco, CA",
-                mobile: "+1-555-0123",
-                email: "hello@pixelperfect.agency",
-                isGstRegistered: false,
+                name: "Acme Corporation",
+                gst: "29ABCDE1234F1Z5",
+                state: "Karnataka",
+                address: "601 Tech Park, Whitefield, Bangalore - 560066",
+                mobile: "9876543210",
+                email: "billing@acme.io",
+                isGstRegistered: true,
+                signatory: "CFO",
                 useInitialAsLogo: true
             },
             client: {
-                name: "TechBrand Co",
-                address: "Austin, TX",
-                email: "finance@techbrand.co"
+                name: "Enterprise Solutions Ltd",
+                address: "BKC, Mumbai, Maharashtra",
+                state: "Maharashtra",
+                mobile: "9123456789",
+                gst: "26ABCDE5678F1Z2"
             },
             items: [
-                { description: "Social Media Campaign (30 days)", rate: 5000, quantity: 1 },
-                { description: "Video Production (3 videos)", rate: 3000, quantity: 3 },
-                { description: "Influencer Outreach", rate: 2500, quantity: 1 }
+                {
+                    description: "Enterprise License – Q1",
+                    hsn: "9983",
+                    rate: 500000,
+                    quantity: 1,
+                    taxRate: 18
+                }
             ],
-            notes: "Net 15 payment terms"
+            taxRate: 18,
+            bank: {
+                name: "HDFC Bank",
+                account: "1234567890",
+                ifsc: "HDFC0000123",
+                branch: "Bangalore"
+            },
+            upiId: "testupi@icici",
+            notes: "Payment due within 30 days"
         },
         output: "binary"
     },

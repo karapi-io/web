@@ -9,7 +9,7 @@ import { useApiVersion } from "../hook/useApiVersion";
 const validSections: DocSection[] = [
     "getting-started",
     "authentication",
-    "gst-payload",
+    "gst-invoice-api",
     "bill-of-supply",
     "templates",
     "responses"

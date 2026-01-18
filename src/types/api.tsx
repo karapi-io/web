@@ -8,6 +8,7 @@ export interface SchemaField {
     type: string;
     required: boolean;
     default?: string;
+    conditional?: boolean;
     description: string;
     children?: SchemaField[];
 }

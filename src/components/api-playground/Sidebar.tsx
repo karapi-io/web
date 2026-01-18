@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Play, BookOpen, Zap, ExternalLink, LayoutGrid, ChevronDown, Check, ChevronRight, FileText, Key, Code, AlertTriangle, Palette } from "lucide-react";
 import type { ApiVersion } from "../../types/api";
 
-export type DocSection = "getting-started" | "authentication" | "gst-payload" | "bill-of-supply" | "templates" | "responses";
+export type DocSection = "getting-started" | "authentication" | "gst-invoice-api" | "bill-of-supply" | "templates" | "responses";
 
 interface SidebarProps {
     viewMode: "playground" | "docs";
@@ -22,7 +22,7 @@ interface SidebarProps {
 const docSections: { id: DocSection; label: string; icon: React.ReactNode }[] = [
     { id: "getting-started", label: "Getting Started", icon: <Zap size={14} /> },
     { id: "authentication", label: "Authentication", icon: <Key size={14} /> },
-    { id: "gst-payload", label: "GST Payload", icon: <Code size={14} /> },
+    { id: "gst-invoice-api", label: "GST Invoice API", icon: <Code size={14} /> },
     { id: "bill-of-supply", label: "Bill of Supply", icon: <FileText size={14} /> },
     { id: "templates", label: "Templates", icon: <Palette size={14} /> },
     { id: "responses", label: "Responses", icon: <AlertTriangle size={14} /> },
@@ -34,7 +34,6 @@ export function Sidebar({
     currentVersionId,
     availableVersions,
     onVersionChange,
-    apiKeyUrl,
     activeDocSection = "getting-started",
     onDocSectionChange,
     useRouteNavigation = false,
@@ -253,7 +252,7 @@ export function Sidebar({
                             <ExternalLink size={12} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                         </Link>
                         <a
-                            href={apiKeyUrl}
+                            href="/get-api-key"
                             className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted group"
                         >
                             <Zap size={16} />

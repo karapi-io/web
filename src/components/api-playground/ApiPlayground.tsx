@@ -65,9 +65,9 @@ export function ApiPlayground() {
         navigate(`/api-docs/${currentVersionId}/${section}`);
     };
 
-    const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id || "corporate");
+    const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id || "service");
     const [payloadStr, setPayloadStr] = useState(
-        JSON.stringify(templatePayloads[templates[0]?.id || "corporate"], null, 2)
+        JSON.stringify(templatePayloads[templates[0]?.id || "service"], null, 2)
     );
 
     // Logic to update payload

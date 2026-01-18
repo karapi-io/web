@@ -6,7 +6,7 @@ export const V1_SCHEMA: SchemaField[] = [
         field: "template",
         type: "string",
         required: true,
-        description: "Template identifier. Available: 'modern-gst' (Tax Invoice) or 'service' (Bill of Supply)."
+        description: "Template identifier. Available: service , ecom , vintage, evergreen are available for free tier, you can browse more in the templates section."
     },
     {
         field: "output",
@@ -24,14 +24,14 @@ export const V1_SCHEMA: SchemaField[] = [
             {
                 field: "invoiceNumber",
                 type: "string",
-                required: true,
-                description: "Unique invoice identifier (e.g., 'INV-1021')."
+                required: false,
+                description: "Unique invoice identifier (e.g., 'INV-1021'). if not provided, a random one will be generated."
             },
             {
                 field: "date",
                 type: "string",
                 required: true,
-                description: "Invoice date in YYYY-MM-DD format."
+                description: "Invoice date (ISO format: YYYY-MM-DD)"
             },
             {
                 field: "dueDate",
@@ -50,14 +50,15 @@ export const V1_SCHEMA: SchemaField[] = [
                 field: "placeOfSupply",
                 type: "string",
                 required: false,
-                description: "State where goods/services are supplied. Required for GST invoices."
+                description: "State where goods/services are supplied. Required for GST invoices only Required if GST registered"
             },
             {
                 field: "taxRate",
                 type: "number",
-                required: false,
+                required: true,
                 default: "18",
-                description: "Default tax rate percentage for items without explicit taxRate."
+                description: "Tax rate is required for GST calculations (in percentage) but is not required for non-GST invoices. If item-specific tax rates are provided, they will override this value. Use 18 as the default if you are not sure."
+
             }
         ]
     },
@@ -83,31 +84,32 @@ export const V1_SCHEMA: SchemaField[] = [
                 field: "state",
                 type: "string",
                 required: false,
-                description: "State name. Required for GST calculations."
+                conditional: true,
+                description: "State name. Required if GST missing."
             },
             {
                 field: "gst",
                 type: "string",
                 required: false,
-                description: "15-digit GSTIN number. Required if isGstRegistered is true."
+                conditional: true,
+                description: "15-digit GSTIN number. Required if isGstRegistered is true and Required if GST registered OR state missing"
             },
             {
                 field: "mobile",
                 type: "string",
-                required: false,
-                description: "Contact phone number."
+                required: true,
+                description: "Contact phone number. 10-digit Indian mobile number"
             },
             {
                 field: "email",
                 type: "string",
-                required: false,
-                description: "Contact email address."
+                required: true,
+                description: "Valid email address."
             },
             {
                 field: "isGstRegistered",
                 type: "boolean",
-                required: false,
-                default: "false",
+                required: true,
                 description: "Set true to enable GST fields and calculations."
             },
             {
@@ -117,11 +119,17 @@ export const V1_SCHEMA: SchemaField[] = [
                 description: "Name to show in signature area."
             },
             {
+                field: "logo",
+                type: "string",
+                required: false,
+                description: "Logo URL"
+            },
+            {
                 field: "useInitialAsLogo",
                 type: "boolean",
                 required: false,
                 default: "false",
-                description: "Generate logo from seller name initials."
+                description: "Generate logo from seller name initials. if you don't provide a logo URL & this is set to false then logo will be omitted."
             }
         ]
     },
@@ -146,7 +154,7 @@ export const V1_SCHEMA: SchemaField[] = [
             {
                 field: "state",
                 type: "string",
-                required: false,
+                required: true,
                 description: "State for determining CGST/SGST vs IGST."
             },
             {
@@ -158,7 +166,7 @@ export const V1_SCHEMA: SchemaField[] = [
             {
                 field: "mobile",
                 type: "string",
-                required: false,
+                required: true,
                 description: "Client phone number."
             }
         ]

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { SchemaField, Template, OutputFormat } from "../../types/api";
 import type { DocSection } from "./Sidebar";
+import SEO from "../Seo";
 
 interface DocumentationProps {
     endpoint: string;
@@ -19,16 +20,16 @@ interface DocumentationProps {
 const sectionOrder: DocSection[] = [
     "getting-started",
     "authentication",
-    "gst-payload",
+    "gst-invoice-api",
     "bill-of-supply",
     "templates",
     "responses"
 ];
 
 const sectionMeta: Record<DocSection, { title: string; description: string }> = {
-    "getting-started": { title: "Getting Started", description: "Quick start guide to generate your first invoice" },
+    "getting-started": { title: "Getting Started with KarAPI", description: "Quick start guide to generate your first invoice" },
     "authentication": { title: "Authentication", description: "Learn how to authenticate API requests" },
-    "gst-payload": { title: "GST Payload", description: "Complete schema reference for tax invoices" },
+    "gst-invoice-api": { title: "GST Invoice API", description: "Complete schema reference for tax invoices" },
     "bill-of-supply": { title: "Bill of Supply", description: "Structure for non-GST registered businesses" },
     "templates": { title: "Templates", description: "Browse available invoice templates" },
     "responses": { title: "Responses", description: "API response formats and error codes" },
@@ -68,7 +69,7 @@ export function Documentation({
                 return <GettingStartedSection endpoint={endpoint} apiKeyUrl={apiKeyUrl} />;
             case "authentication":
                 return <AuthenticationSection apiKeyUrl={apiKeyUrl} />;
-            case "gst-payload":
+            case "gst-invoice-api":
                 return <GstPayloadSection schema={schema} />;
             case "bill-of-supply":
                 return <BillOfSupplySection />;
@@ -181,11 +182,45 @@ export function Documentation({
 
 function GettingStartedSection({ endpoint, apiKeyUrl }: { endpoint: string; apiKeyUrl: string }) {
     return (
+
         <div className="space-y-8">
+            <SEO
+                title="Getting Started with KarAPI (v1) – GST Invoice API Documentation"
+                description="Start using KarAPI in minutes. Learn how to get your API key, send your first request, and generate GST-compliant invoices as PDF, HTML, or hosted links."
+                keywords="getting started with gst invoice api, karapi docs, gst invoice api quickstart, generate gst invoice programmatically, invoice api india, pdf invoice api"
+                url="https://karapi.io/api-docs/v1/getting-started"
+                image="https://karapi.io/karapi-logo.png"
+            />
+
+
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                Generate professional GST-compliant invoices programmatically.
-                Start integrating in under 2 minutes.
+                Generate professional GST-compliant invoices programmatically using KarAPI.
+                Start integrating in under 2 minutes with our simple REST API.
             </p>
+
+            <div className="bg-muted/40 rounded-xl p-5 border border-border/40">
+                <h3 className="font-semibold text-foreground mb-2">What is KarAPI?</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                    KarAPI is a developer-first API for generating GST-compliant invoices in India.
+                    It handles GST calculations, formatting, PDF rendering, QR codes, and templates —
+                    so you don’t have to build a PDF engine from scratch.
+                </p>
+            </div>
+
+            <div>
+                <h3 className="text-lg font-semibold text-foreground mb-3">
+                    What you can generate
+                </h3>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+                    <li>✅ GST Invoices (CGST, SGST, IGST)</li>
+                    <li>✅ Bill of Supply</li>
+                    <li>✅ PDF invoices</li>
+                    <li>✅ HTML | Binary output</li>
+                    <li>✅ Hosted invoice links</li>
+                    <li>✅ QR payment invoices</li>
+                </ul>
+            </div>
+
 
             {/* Steps */}
             <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-6 border border-primary/20">
@@ -242,6 +277,18 @@ function GettingStartedSection({ endpoint, apiKeyUrl }: { endpoint: string; apiK
                 </div>
             </div>
 
+            <div className="bg-warning/5 border border-warning/20 rounded-xl p-5">
+                <h4 className="font-medium text-foreground mb-1">Authentication Required</h4>
+                <p className="text-sm text-muted-foreground">
+                    All API requests must include your API key in the <code className="font-mono">x-api-key</code> header.
+                    Learn more about authentication →
+                    <Link to="/api-docs/v1/authentication" className="text-primary hover:underline ml-1">
+                        Authentication Docs
+                    </Link>
+                </p>
+            </div>
+
+
             {/* Quick Example */}
             <div>
                 <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
@@ -274,20 +321,74 @@ function GettingStartedSection({ endpoint, apiKeyUrl }: { endpoint: string; apiK
                 </div>
             </div>
 
+            <div>
+                <h3 className="text-lg font-semibold text-foreground mb-3">
+                    What the response looks like
+                </h3>
+
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>📄 PDF binary (for download or email)</li>
+                    <li>🌐 Hosted invoice URL</li>
+                    <li>🧾 JSON metadata</li>
+                </ul>
+            </div>
+
+
             {/* CTA */}
             <div className="flex items-center gap-4">
                 <Link
-                    to="/?template=corporate"
+                    to="/playground"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
                 >
                     Try in Playground <ArrowRight size={14} />
                 </Link>
             </div>
+
+            <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-5">
+                <h4 className="font-medium text-foreground mb-1">Error Handling</h4>
+                <p className="text-sm text-muted-foreground">
+                    If something goes wrong, KarAPI returns structured error responses with a
+                    message, code, and request ID.
+                    Learn more →
+                    <Link to="/api-docs/v1/errors" className="text-primary hover:underline ml-1">
+                        Error Documentation
+                    </Link>
+                </p>
+            </div>
+            <div className="mt-10">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Next steps
+                </h3>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <Link to="/api-docs/v1/authentication" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        🔐 Authentication
+                        <p className="text-xs text-muted-foreground mt-1">How API keys work</p>
+                    </Link>
+
+                    <Link to="/api-docs/v1/gst-invoice-api" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        🧾 GST Invoice API
+                        <p className="text-xs text-muted-foreground mt-1">Full endpoint reference</p>
+                    </Link>
+
+                    <Link to="/api-docs/v1/bill-of-supply-api" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        📄 Bill of Supply API
+                        <p className="text-xs text-muted-foreground mt-1">Non-GST invoices</p>
+                    </Link>
+
+                    <Link to="/api-docs/v1/examples/nodejs" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        💻 Node.js Examples
+                        <p className="text-xs text-muted-foreground mt-1">Copy-paste ready code</p>
+                    </Link>
+                </div>
+            </div>
+
         </div>
     );
 }
 
 function AuthenticationSection({ apiKeyUrl }: { apiKeyUrl: string }) {
+    console.log("apiKeyUrl:", apiKeyUrl);
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async (text: string) => {
@@ -297,29 +398,66 @@ function AuthenticationSection({ apiKeyUrl }: { apiKeyUrl: string }) {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-10">
+            <SEO
+                title="Authentication – KarAPI (v1) | GST Invoice API Documentation"
+                description="Learn how to authenticate requests to KarAPI using API keys. Understand required headers, security best practices, and see example requests."
+                keywords="karapi authentication, gst invoice api authentication, api key authentication, x-api-key header, secure invoice api, karapi docs"
+                url="https://karapi.io/api-docs/v1/authentication"
+                image="https://karapi.io/karapi-logo.png"
+            />
+
+            {/* Intro */}
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                All API requests require authentication using an API key passed in the request headers.
+                All API requests to KarAPI must be authenticated using an API key. This key
+                identifies your application and allows us to securely process your requests.
             </p>
 
-            {/* Header Format */}
+            {/* How to get API Key */}
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                    How to get your API key
+                </h3>
+                <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+                    <li>Create a free KarAPI account</li>
+                    <li>Generate a new API key</li>
+                    <li>Copy and store it securely</li>
+                </ol>
+
+                <div className="mt-4">
+                    <a
+                        href="/get-api-key"
+                        className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
+                    >
+                        Get your free API key <ArrowRight size={14} />
+                    </a>
+                </div>
+            </div>
+
+            {/* Required Header */}
             <div className="bg-muted/50 rounded-xl p-6 border border-border">
-                <h3 className="text-sm font-semibold text-foreground mb-4">Required Header</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-4">
+                    Required Header
+                </h3>
+
                 <div className="bg-code-bg rounded-lg p-4 mb-4 flex items-center justify-between">
                     <code className="text-sm font-mono text-code-foreground">
                         <span className="text-success">x-api-key</span>: your_api_key_here
                     </code>
                     <button
-                        onClick={() => handleCopy('x-api-key: your_api_key_here')}
+                        onClick={() => handleCopy("x-api-key: your_api_key_here")}
                         className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                     >
                         {copied ? <Check size={16} className="text-success" /> : <Copy size={16} />}
                     </button>
                 </div>
+
                 <div className="flex items-center gap-2 pt-2 border-t border-border">
-                    <span className="text-sm text-muted-foreground">Don't have an API key?</span>
+                    <span className="text-sm text-muted-foreground">
+                        Don't have an API key?
+                    </span>
                     <a
-                        href={apiKeyUrl}
+                        href="/get-api-key"
                         className="text-sm text-primary font-medium hover:underline flex items-center gap-1"
                     >
                         Get your free API key <ArrowRight size={14} />
@@ -333,9 +471,12 @@ function AuthenticationSection({ apiKeyUrl }: { apiKeyUrl: string }) {
                     <ChevronRight size={20} className="text-primary" />
                     Example Request with Authentication
                 </h3>
+
                 <div className="bg-code-bg rounded-xl overflow-hidden">
                     <div className="px-4 py-2.5 border-b border-border/30 flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground font-medium">JavaScript (fetch)</span>
+                        <span className="text-xs text-muted-foreground font-medium">
+                            JavaScript (fetch)
+                        </span>
                     </div>
                     <pre className="p-4 text-sm font-mono text-code-foreground overflow-x-auto">
                         {`const response = await fetch('https://api.karapi.io/invoice/v1/generate', {
@@ -353,6 +494,37 @@ function AuthenticationSection({ apiKeyUrl }: { apiKeyUrl: string }) {
                 </div>
             </div>
 
+            {/* Where to use API Key */}
+            <div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                    Where should I use my API key?
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-2xl">
+                    Your API key should only be used in server-side applications such as Node.js,
+                    backend services, or serverless functions. Do not expose your API key in
+                    frontend JavaScript, mobile apps, or public repositories.
+                </p>
+            </div>
+
+            {/* Authentication Errors */}
+            <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-6">
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                    Authentication errors
+                </h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><strong>401 Unauthorized</strong> – Missing or invalid API key</li>
+                    <li><strong>403 Forbidden</strong> – API key does not have access</li>
+                    <li><strong>429 Too Many Requests</strong> – Rate limit exceeded</li>
+                </ul>
+
+                <p className="text-sm text-muted-foreground mt-3">
+                    Learn more about error responses →
+                    <Link to="/api-docs/v1/errors" className="text-primary hover:underline ml-1">
+                        Error documentation
+                    </Link>
+                </p>
+            </div>
+
             {/* Security Best Practices */}
             <div className="bg-warning/5 border border-warning/20 rounded-xl p-6">
                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -366,7 +538,7 @@ function AuthenticationSection({ apiKeyUrl }: { apiKeyUrl: string }) {
                     </li>
                     <li className="flex items-start gap-2">
                         <CheckCircle2 size={14} className="text-success mt-0.5 flex-shrink-0" />
-                        Use environment variables to store your API key
+                        Store your API key using environment variables
                     </li>
                     <li className="flex items-start gap-2">
                         <CheckCircle2 size={14} className="text-success mt-0.5 flex-shrink-0" />
@@ -374,78 +546,321 @@ function AuthenticationSection({ apiKeyUrl }: { apiKeyUrl: string }) {
                     </li>
                     <li className="flex items-start gap-2">
                         <CheckCircle2 size={14} className="text-success mt-0.5 flex-shrink-0" />
-                        Use server-side requests for production applications
+                        Use server-side requests for production apps
                     </li>
                 </ul>
             </div>
-        </div>
-    );
-}
 
-function GstPayloadSection({ schema }: { schema: SchemaField[] }) {
-    return (
-        <div className="space-y-8">
-            <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                The GST invoice payload structure follows Indian GST regulations. Below is the complete schema reference.
-            </p>
-
-            {/* Schema Reference */}
-            <div className="space-y-4">
-                {schema.map((field, index) => (
-                    <SchemaSection key={field.field} field={field} index={index} />
-                ))}
-            </div>
-
-            {/* Complete Example */}
-            <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <ChevronRight size={20} className="text-primary" />
-                    Complete Payload Example
+            {/* Next Steps */}
+            <div className="mt-10">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                    What to explore next
                 </h3>
-                <div className="bg-code-bg rounded-xl overflow-hidden">
-                    <div className="px-4 py-2.5 border-b border-border/30 flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground font-medium">JSON Payload</span>
-                    </div>
-                    <pre className="p-4 text-sm font-mono text-code-foreground overflow-x-auto max-h-[400px]">
-                        {`{
-  "template": "corporate",
-  "output": "binary",
-  "invoice": {
-    "invoiceNumber": "INV-2026-001",
-    "date": "2026-01-17",
-    "dueDate": "2026-02-17",
-    "placeOfSupply": "Maharashtra"
-  },
-  "seller": {
-    "name": "Your Company Pvt Ltd",
-    "address": "123 Business Park, Mumbai",
-    "gstin": "27AABCT1234F1ZH",
-    "pan": "AABCT1234F",
-    "email": "billing@yourcompany.com",
-    "phone": "+91 9876543210"
-  },
-  "client": {
-    "name": "Client Company Ltd",
-    "address": "456 Corporate Tower, Delhi",
-    "gstin": "07AADCC5678G1ZK",
-    "email": "accounts@client.com"
-  },
-  "items": [
-    {
-      "description": "Software Development Services",
-      "hsn": "998314",
-      "quantity": 1,
-      "rate": 50000,
-      "gstRate": 18
-    }
-  ]
-}`}
-                    </pre>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <Link to="/api-docs/v1/gst-invoice-api" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        🧾 GST Invoice API
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Full endpoint reference
+                        </p>
+                    </Link>
+
+                    <Link to="/api-docs/v1/bill-of-supply-api" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        📄 Bill of Supply API
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Non-GST invoices
+                        </p>
+                    </Link>
+
+                    <Link to="/api-docs/v1/examples/nodejs" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        💻 Node.js Examples
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Copy-paste ready code
+                        </p>
+                    </Link>
+
+                    <Link to="/playground" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                        ⚡ Try Playground
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Test requests live
+                        </p>
+                    </Link>
                 </div>
             </div>
         </div>
     );
 }
+
+
+function GstPayloadSection({ schema }: { schema: SchemaField[] }) {
+    const [activeTab, setActiveTab] = useState<"curl" | "node" | "python" | "php" | "go">("curl");
+
+    const endpoint = "https://api.karapi.io/v1/invoices/generate";
+
+    const payload = `{
+  "template": "service",
+  "output": "binary",
+  "invoice": {
+    "invoiceNumber": "INV-2026-001",
+    "date": "2026-01-17",
+    "dueDate": "2026-02-17",
+    "placeOfSupply": "Maharashtra",
+    "taxRate": 18,
+
+    "seller": {
+      "name": "Your Company Pvt Ltd",
+      "address": "123 Business Park, Mumbai",
+      "mobile": "9876543210",
+      "email": "billing@yourcompany.com",
+      "isGstRegistered": true,
+      "gst": "27AABCT1234F1ZH",
+      "state": "Maharashtra",
+      "signatory": "Authorized Signatory",
+      "useInitialAsLogo": true
+    },
+
+    "client": {
+      "name": "Client Company Ltd",
+      "address": "456 Corporate Tower, Delhi",
+      "state": "Maharashtra",
+      "mobile": "9123456789",
+      "gst": "07AADCC5678G1ZK"
+    },
+
+    "items": [
+      {
+        "description": "Software Development Services",
+        "hsn": "998314",
+        "quantity": 1,
+        "rate": 50000,
+        "taxRate": 18
+      }
+    ],
+
+    "bank": {
+      "name": "HDFC Bank",
+      "account": "1234567890",
+      "ifsc": "HDFC0000123"
+    },
+
+    "upiId": "yourname@upi",
+    "notes": "Payment due within 15 days"
+  }
+}`;
+
+    const curlExample = `curl -X POST ${endpoint} \\
+  -H "Content-Type: application/json" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -d '${payload}'`;
+
+    const nodeExample = `const res = await fetch("${endpoint}", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": "YOUR_API_KEY"
+  },
+  body: JSON.stringify(payload)
+});
+
+const data = await res.json();
+console.log(data);`;
+
+    const pythonExample = `import requests
+
+url = "${endpoint}"
+headers = {
+  "Content-Type": "application/json",
+  "x-api-key": "YOUR_API_KEY"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.json())`;
+
+    const phpExample = `<?php
+$ch = curl_init("${endpoint}");
+
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+  "Content-Type: application/json",
+  "x-api-key: YOUR_API_KEY"
+]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+echo $response;
+?>`;
+
+    const goExample = `package main
+
+import (
+  "bytes"
+  "net/http"
+)
+
+func main() {
+  payload := []byte(\`{...payload}\`)
+
+  req, _ := http.NewRequest("POST", "${endpoint}", bytes.NewBuffer(payload))
+  req.Header.Set("Content-Type", "application/json")
+  req.Header.Set("x-api-key", "YOUR_API_KEY")
+
+  client := &http.Client{}
+  res, _ := client.Do(req)
+  defer res.Body.Close()
+}`;
+
+    const activeCode =
+        activeTab === "curl" ? curlExample :
+            activeTab === "node" ? nodeExample :
+                activeTab === "python" ? pythonExample :
+                    activeTab === "php" ? phpExample :
+                        goExample;
+
+    return (
+        <>
+            <SEO
+                title="GST Invoice API – Generate Indian GST Invoices Programmatically | KarAPI"
+                description="Generate GST-compliant invoices for India using KarAPI. Create invoices in PDF, HTML, or URL format via a simple JSON API. Supports GST validation, tax calculations, and multiple output formats."
+                keywords="gst invoice api, indian gst api, generate gst invoice, invoice json api, gst billing api, india gst invoice generator, karapi gst api, invoice generation api"
+                url="https://karapi.io/api-docs/v1/gst-invoice-api"
+                image="https://karapi.io/karapi-logo.png"
+            />
+
+
+            <main className="space-y-12">
+                <header className="space-y-3 max-w-3xl">
+                    <p className="text-lg text-muted-foreground">
+                        Generate GST-compliant invoices programmatically using KarAPI. This documentation explains the full
+                        JSON payload structure, required and conditional fields, authentication method, and example requests.
+                    </p>
+                </header>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold">Payload Schema Reference</h2>
+                    <p className="text-muted-foreground max-w-2xl">
+                        Fields marked as <b>Conditional</b> are required only when the seller is GST-registered.
+                    </p>
+
+                    <div className="space-y-4">
+                        {schema.map((field, index) => (
+                            <SchemaSection key={field.field} field={field} index={index} />
+                        ))}
+                    </div>
+                </section>
+
+                <section className="space-y-3">
+                    <h2 className="text-2xl font-semibold">API Endpoint</h2>
+                    <p className="text-muted-foreground">
+                        Send a POST request to the following endpoint with your API key in the <code>x-api-key</code> header.
+                    </p>
+
+                    <div className="flex items-center justify-between bg-muted/40 px-4 py-2 rounded border">
+                        <code>{endpoint}</code>
+                        <button
+                            onClick={() => navigator.clipboard.writeText(endpoint)}
+                            className="text-xs px-2 py-1 rounded border hover:bg-muted"
+                        >
+                            Copy
+                        </button>
+                    </div>
+                </section>
+
+                <section className="space-y-3">
+                    <h2 className="text-2xl font-semibold flex items-center gap-2">
+                        <ChevronRight size={20} className="text-primary" />
+                        Example GST Invoice Payload
+                    </h2>
+
+                    <div className="bg-code-bg rounded-xl overflow-hidden">
+                        <div className="px-4 py-2.5 border-b border-border/30 flex justify-between">
+                            <span className="text-xs text-muted-foreground font-medium">JSON</span>
+                            <button
+                                onClick={() => navigator.clipboard.writeText(payload)}
+                                className="text-xs px-2 py-1 rounded border hover:bg-muted text-white"
+                            >
+                                Copy
+                            </button>
+                        </div>
+
+                        <pre className="p-4 text-sm font-mono overflow-x-auto max-h-[400px] text-white">
+                            {payload}
+                        </pre>
+                    </div>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold">Code Examples</h2>
+
+                    <div className="flex flex-wrap gap-2">
+                        {["curl", "node", "python", "php", "go"].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab as any)}
+                                className={`px-3 py-1.5 text-xs rounded capitalize ${activeTab === tab
+                                    ? "bg-primary text-white"
+                                    : "bg-muted text-muted-foreground"
+                                    }`}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="bg-code-bg rounded-xl overflow-hidden">
+                        <div className="px-4 py-2.5 border-b border-border/30 flex justify-between">
+                            <span className="text-xs text-muted-foreground font-medium">
+                                {activeTab.toUpperCase()}
+                            </span>
+                            <button
+                                onClick={() => navigator.clipboard.writeText(activeCode)}
+                                className="text-xs px-2 py-1 rounded border hover:bg-muted text-white"
+                            >
+                                Copy
+                            </button>
+                        </div>
+
+                        <pre className="p-4 text-sm font-mono overflow-x-auto text-white">
+                            {activeCode}
+                        </pre>
+                    </div>
+                </section>
+
+                {/* Next Steps */}
+                <div className="mt-10">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">
+                        What to explore next
+                    </h3>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                        <Link to="/api-docs/v1/responses" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                            🧾 Responses
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Full endpoint reference
+                            </p>
+                        </Link>
+
+                        <Link to="/api-docs/v1/bill-of-supply-api" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                            📄 Bill of Supply API
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Non-GST invoices
+                            </p>
+                        </Link>
+
+                        <Link to="/playground" className="p-4 rounded-lg border hover:bg-muted/40 transition">
+                            ⚡ Try Playground
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Test requests live
+                            </p>
+                        </Link>
+                    </div>
+                </div>
+            </main>
+        </>
+    );
+}
+
+
 
 function BillOfSupplySection() {
     return (
@@ -813,12 +1228,21 @@ function SchemaSection({ field, index }: { field: SchemaField; index: number }) 
                                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">
                                             {child.type}
                                         </span>
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${child.required
-                                            ? "bg-destructive/10 text-destructive"
-                                            : "bg-muted text-muted-foreground"
-                                            }`}>
-                                            {child.required ? "Required" : "Optional"}
+                                        <span
+                                            className={`text-[10px] px-1.5 py-0.5 rounded ${child.conditional
+                                                ? "bg-yellow-100 text-yellow-700"
+                                                : child.required
+                                                    ? "bg-destructive/10 text-destructive"
+                                                    : "bg-muted text-muted-foreground"
+                                                }`}
+                                        >
+                                            {child.conditional
+                                                ? "Conditional"
+                                                : child.required
+                                                    ? "Required"
+                                                    : "Optional"}
                                         </span>
+
                                         {child.default && (
                                             <span className="text-[10px] text-muted-foreground">
                                                 Default: <code className="text-primary">{child.default}</code>
