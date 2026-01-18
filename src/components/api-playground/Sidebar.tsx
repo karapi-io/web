@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Play, BookOpen, Zap, ExternalLink, LayoutGrid, ChevronDown, Check } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Play, BookOpen, Zap, ExternalLink, LayoutGrid, ChevronDown, Check, ChevronRight, FileText, Key, Code, AlertTriangle, Palette } from "lucide-react";
 import type { ApiVersion } from "../../types/api";
+
+export type DocSection = "getting-started" | "authentication" | "gst-payload" | "bill-of-supply" | "templates" | "responses";
 
 interface SidebarProps {
     viewMode: "playground" | "docs";
@@ -11,7 +13,20 @@ interface SidebarProps {
     availableVersions: ApiVersion[];
     onVersionChange: (versionId: string) => void;
     apiKeyUrl: string;
+    activeDocSection?: DocSection;
+    onDocSectionChange?: (section: DocSection) => void;
+    useRouteNavigation?: boolean;
+    onPlaygroundClick?: () => void;
 }
+
+const docSections: { id: DocSection; label: string; icon: React.ReactNode }[] = [
+    { id: "getting-started", label: "Getting Started", icon: <Zap size={14} /> },
+    { id: "authentication", label: "Authentication", icon: <Key size={14} /> },
+    { id: "gst-payload", label: "GST Payload", icon: <Code size={14} /> },
+    { id: "bill-of-supply", label: "Bill of Supply", icon: <FileText size={14} /> },
+    { id: "templates", label: "Templates", icon: <Palette size={14} /> },
+    { id: "responses", label: "Responses", icon: <AlertTriangle size={14} /> },
+];
 
 export function Sidebar({
     viewMode,
@@ -19,26 +34,44 @@ export function Sidebar({
     currentVersionId,
     availableVersions,
     onVersionChange,
-    apiKeyUrl
+    apiKeyUrl,
+    activeDocSection = "getting-started",
+    onDocSectionChange,
+    useRouteNavigation = false,
+    onPlaygroundClick
 }: SidebarProps) {
+    const navigate = useNavigate();
     const [isVersionOpen, setIsVersionOpen] = useState(false);
+    const [isDocsExpanded, setIsDocsExpanded] = useState(viewMode === "docs");
     const selectedVersion = availableVersions.find(v => v.id === currentVersionId) || availableVersions[0];
+
+    const handleDocsClick = () => {
+        if (viewMode !== "docs") {
+            if (useRouteNavigation) {
+                navigate(`/api-docs/${currentVersionId}/getting-started`);
+            } else {
+                setViewMode("docs");
+                setIsDocsExpanded(true);
+            }
+        } else {
+            setIsDocsExpanded(!isDocsExpanded);
+        }
+    };
+
+    const handleDocSectionClick = (section: DocSection) => {
+        if (useRouteNavigation) {
+            navigate(`/api-docs/${currentVersionId}/${section}`);
+        } else {
+            setViewMode("docs");
+            onDocSectionChange?.(section);
+        }
+    };
 
     return (
         <div className="w-64 flex flex-col border-r border-border bg-sidebar">
             {/* Logo & Version */}
             <div className="p-6 border-b border-border">
-                {/* <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
-                        <span className="text-primary-foreground font-bold text-lg">K</span>
-                    </div>
-                    <div>
-                        <span className="font-bold text-lg tracking-tight text-foreground">
-                            Kar<span className="text-primary">{`{API}`}</span>
-                        </span>
-                        <p className="text-xs text-muted-foreground">Invoice API</p>
-                    </div>
-                </div> */}
+
 
                 {/* Version Dropdown */}
                 <div className="relative">
@@ -134,16 +167,74 @@ export function Sidebar({
                     <div className="space-y-1">
                         <NavButton
                             active={viewMode === "playground"}
-                            onClick={() => setViewMode("playground")}
+                            onClick={() => {
+                                if (useRouteNavigation && onPlaygroundClick) {
+                                    onPlaygroundClick();
+                                } else {
+                                    setViewMode("playground");
+                                }
+                            }}
                             icon={<Play size={16} />}
                             label="Playground"
                         />
-                        <NavButton
-                            active={viewMode === "docs"}
-                            onClick={() => setViewMode("docs")}
-                            icon={<BookOpen size={16} />}
-                            label="Documentation"
-                        />
+
+                        {/* Documentation with expandable sub-items */}
+                        <div>
+                            <button
+                                onClick={handleDocsClick}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative ${viewMode === "docs"
+                                    ? "bg-surface-elevated text-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                    }`}
+                            >
+                                {viewMode === "docs" && (
+                                    <motion.div
+                                        layoutId="activeNav"
+                                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                <span className={viewMode === "docs" ? "text-primary" : ""}>
+                                    <BookOpen size={16} />
+                                </span>
+                                <span className="flex-1 text-left">Documentation</span>
+                                <motion.div
+                                    animate={{ rotate: isDocsExpanded ? 90 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="text-muted-foreground"
+                                >
+                                    <ChevronRight size={14} />
+                                </motion.div>
+                            </button>
+
+                            <AnimatePresence>
+                                {isDocsExpanded && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="ml-4 mt-1 space-y-0.5 border-l border-border pl-3">
+                                            {docSections.map((section) => (
+                                                <button
+                                                    key={section.id}
+                                                    onClick={() => handleDocSectionClick(section.id)}
+                                                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-xs font-medium transition-colors ${activeDocSection === section.id && viewMode === "docs"
+                                                        ? "bg-primary/10 text-primary"
+                                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                                        }`}
+                                                >
+                                                    {section.icon}
+                                                    {section.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </div>
 
@@ -206,7 +297,7 @@ function NavButton({
         >
             {active && (
                 <motion.div
-                    layoutId="activeNav"
+                    layoutId="activeNavPlayground"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />

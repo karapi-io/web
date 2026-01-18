@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Play, Key, ArrowRight, Menu, X, FileJson,
@@ -7,7 +7,7 @@ import {
     PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronUp, Code2,
     Braces
 } from "lucide-react";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, type DocSection } from "./Sidebar";
 import { InvoiceTypeSelector } from "./InvoiceTypeSelector";
 import { CodeEditor } from "./CodeEditor";
 import { OutputPreview } from "./OutputPreview";
@@ -17,8 +17,10 @@ import { useApiVersion } from "../../hook/useApiVersion";
 import type { OutputType, InvoiceType } from "../../types/api";
 
 export function ApiPlayground() {
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [viewMode, setViewMode] = useState<"playground" | "docs">("playground");
+    const [activeDocSection, setActiveDocSection] = useState<DocSection>("getting-started");
     const [invoiceType, setInvoiceType] = useState<InvoiceType>("tax-invoice");
     const [outputType, setOutputType] = useState<OutputType>("binary");
     const [apiKey, setApiKey] = useState("");
@@ -50,9 +52,22 @@ export function ApiPlayground() {
         config,
     } = useApiVersion("v1");
 
-    const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id || "service");
+    // Handler to navigate to docs with proper URL
+    const handleViewModeChange = (mode: "playground" | "docs") => {
+        if (mode === "docs") {
+            navigate(`/api-docs/${currentVersionId}/${activeDocSection}`);
+        } else {
+            setViewMode(mode);
+        }
+    };
+
+    const handleDocSectionChange = (section: DocSection) => {
+        navigate(`/api-docs/${currentVersionId}/${section}`);
+    };
+
+    const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id || "corporate");
     const [payloadStr, setPayloadStr] = useState(
-        JSON.stringify(templatePayloads[templates[0]?.id || "service"], null, 2)
+        JSON.stringify(templatePayloads[templates[0]?.id || "corporate"], null, 2)
     );
 
     // Logic to update payload
@@ -216,11 +231,14 @@ export function ApiPlayground() {
                             <div className="h-full overflow-y-auto pb-20">
                                 <Sidebar
                                     viewMode={viewMode}
-                                    setViewMode={setViewMode}
+                                    setViewMode={handleViewModeChange}
                                     currentVersionId={currentVersionId}
                                     availableVersions={availableVersions}
                                     onVersionChange={switchVersion}
                                     apiKeyUrl={apiKeyUrl}
+                                    activeDocSection={activeDocSection}
+                                    onDocSectionChange={handleDocSectionChange}
+                                    useRouteNavigation={true}
                                 />
                             </div>
                         </motion.div>
@@ -232,11 +250,14 @@ export function ApiPlayground() {
             <div className="hidden lg:block h-full shadow-xl shadow-black/5 z-20">
                 <Sidebar
                     viewMode={viewMode}
-                    setViewMode={setViewMode}
+                    setViewMode={handleViewModeChange}
                     currentVersionId={currentVersionId}
                     availableVersions={availableVersions}
                     onVersionChange={switchVersion}
                     apiKeyUrl={apiKeyUrl}
+                    activeDocSection={activeDocSection}
+                    onDocSectionChange={handleDocSectionChange}
+                    useRouteNavigation={true}
                 />
             </div>
 
@@ -249,6 +270,8 @@ export function ApiPlayground() {
                         schema={schema}
                         apiKeyUrl={apiKeyUrl}
                         versionId={currentVersionId}
+                        activeSection={activeDocSection}
+                        onSectionChange={setActiveDocSection}
                     />
                 ) : (
                     <>
@@ -286,10 +309,10 @@ export function ApiPlayground() {
                                     exit={{ width: 0, opacity: 0 }}
                                     transition={{ duration: 0.3, ease: "easeInOut" }}
                                     className={`
-                                        flex-col border-r border-border bg-background/50 transition-all duration-300
-                                        ${activeMobileTab === "request" ? "flex flex-1 w-full h-full overflow-hidden" : "hidden lg:flex"}
-                                        lg:w-[350px] lg:flex-none lg:h-auto
-                                    `}
+                    flex-col border-r border-border bg-background/50 transition-all duration-300
+                    ${activeMobileTab === "request" ? "flex flex-1 w-full h-full overflow-hidden" : "hidden lg:flex"}
+                    lg:w-[350px] lg:flex-none lg:h-auto
+                  `}
                                 >
                                     {/* Config Content */}
                                     <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin p-4 lg:p-5 space-y-6 min-w-[280px] pb-4 flex flex-col">
@@ -320,7 +343,7 @@ export function ApiPlayground() {
                                             </div>
                                         </div>
 
-                                        {/* API Key Section - RESTORED TO PREVIOUS DESIGN */}
+                                        {/* API Key Section */}
                                         <div>
                                             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
                                                 API Key
@@ -396,9 +419,7 @@ export function ApiPlayground() {
                                         </div>
 
                                         {/* Payload Editor */}
-                                        <div
-                                            className="h-[60vh] lg:h-auto lg:flex-1 lg:min-h-[600px] xl:min-h-[700px] flex flex-col"
-                                        >
+                                        <div className="h-[60vh] lg:h-auto lg:flex-1 lg:min-h-[600px] xl:min-h-[700px] flex flex-col">
                                             <div className="flex items-center justify-between mb-2">
                                                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
                                                     <FileJson size={12} /> Payload

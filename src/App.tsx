@@ -15,6 +15,7 @@ import GeneratorPage from './pages/GeneratorPage';
 import { ApiPlayground } from './components/api-playground/ApiPlayground';
 import GetApiKey from './pages/GetKeyPage';
 import Templates from './pages/Templates';
+import ApiDocs from './pages/ApiDocs';
 // import ContactUs from './pages/ContactUs';
 
 const App: React.FC = () => {
@@ -26,7 +27,10 @@ const App: React.FC = () => {
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/community" element={<CommunityPage />} />
-          <Route path="/api-docs" element={<ApiPlayground />} />
+          <Route path="/playground" element={<ApiPlayground />} />
+          <Route path="/api-docs/" element={<ApiDocs />} />
+          <Route path="/api-docs/:version/:section" element={<ApiDocs />} />
+
           <Route path="/templates" element={<Templates />} />
           <Route path="/get-api-key" element={<GetApiKey />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
