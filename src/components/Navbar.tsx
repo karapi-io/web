@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-    Zap, Key, FileText, Menu, X, ExternalLink
+    Zap, Key, FileText, Menu, X, ExternalLink, GitBranch
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import navbarIcon from '../../public/Karapi-side-bar-icon.svg';
+import { useAuth } from '../hook/useAuth';
 
 export default function Navbar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const { isAuthenticated, userEmail, logout } = useAuth();
     const location = useLocation();
 
     // Handle scroll effect
@@ -27,6 +29,7 @@ export default function Navbar() {
 
     // Helper to check active state
     const isActive = (path: string) => location.pathname === path;
+    const isActivePrefix = (path: string) => location.pathname.startsWith(path);
 
     return (
         <>
@@ -68,6 +71,16 @@ export default function Navbar() {
                                     Free Generator
                                 </Link>
                                 <Link
+                                    to="/"
+                                    className={`flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all ${location.pathname === '/'
+                                        ? "bg-blue-50 text-blue-700"
+                                        : "text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+                                        }`}
+                                >
+                                    <GitBranch size={16} className={location.pathname === '/' ? "text-blue-600" : "text-slate-400"} />
+                                    Dashboard
+                                </Link>
+                                <Link
                                     to="/playground"
                                     className={`flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all ${isActive('/playground')
                                         ? "bg-blue-50 text-blue-600"
@@ -86,11 +99,27 @@ export default function Navbar() {
                             {/* Docs Link */}
                             <Link
                                 to='/api-docs'
-                                className={`flex items-center gap-2 text-sm font-medium transition-colors ${isActive('/api-docs') ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
+                                className={`flex items-center gap-2 text-sm font-medium transition-colors ${isActivePrefix('/api-docs') ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
                                     }`}
                             >
                                 Docs
                             </Link>
+
+                            {isAuthenticated ? (
+                                <button
+                                    onClick={logout}
+                                    className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                                >
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link
+                                    to="/login"
+                                    className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                                >
+                                    Login
+                                </Link>
+                            )}
 
                             {/* Divider */}
                             <div className="h-5 w-px bg-slate-200"></div>
@@ -141,6 +170,16 @@ export default function Navbar() {
                                     <span className="font-medium">Free Generator</span>
                                 </Link>
                                 <Link
+                                    to="/"
+                                    className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/' ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
+                                        }`}
+                                >
+                                    <div className="p-2 bg-white border border-slate-200 rounded-lg shadow-sm">
+                                        <GitBranch size={18} className="text-blue-600" />
+                                    </div>
+                                    <span className="font-medium">Dashboard</span>
+                                </Link>
+                                <Link
                                     to="/playground"
                                     className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-colors ${isActive('/playground') ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
                                         }`}
@@ -165,6 +204,11 @@ export default function Navbar() {
                             </div>
 
                             <div className="pt-4">
+                                {isAuthenticated && userEmail ? (
+                                    <div className="px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 mb-3">
+                                        Signed in as <span className="font-semibold">{userEmail}</span>
+                                    </div>
+                                ) : null}
                                 <Link
                                     to='/get-api-key'
                                     className="flex items-center justify-center gap-2 w-full px-5 py-3 text-sm font-semibold text-white bg-slate-900 rounded-xl hover:bg-slate-800 shadow-lg"
@@ -172,6 +216,21 @@ export default function Navbar() {
                                     <Key size={18} />
                                     Get Your API Key
                                 </Link>
+                                {isAuthenticated ? (
+                                    <button
+                                        onClick={logout}
+                                        className="mt-3 w-full px-5 py-3 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50"
+                                    >
+                                        Logout
+                                    </button>
+                                ) : (
+                                    <Link
+                                        to="/login"
+                                        className="mt-3 flex items-center justify-center w-full px-5 py-3 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50"
+                                    >
+                                        Login
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </motion.div>

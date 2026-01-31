@@ -45,23 +45,9 @@ export function Documentation({
     activeSection = "getting-started",
     onSectionChange
 }: DocumentationProps) {
-    // const [copied, setCopied] = useState(false);
-
     const currentIndex = sectionOrder.indexOf(activeSection);
     const prevSection = currentIndex > 0 ? sectionOrder[currentIndex - 1] : null;
     const nextSection = currentIndex < sectionOrder.length - 1 ? sectionOrder[currentIndex + 1] : null;
-
-    // const handleCopyEndpoint = async () => {
-    //     await navigator.clipboard.writeText(endpoint);
-    //     setCopied(true);
-    //     setTimeout(() => setCopied(false), 2000);
-    // };
-
-    // const handleCopy = async (text: string) => {
-    //     await navigator.clipboard.writeText(text);
-    //     setCopied(true);
-    //     setTimeout(() => setCopied(false), 2000);
-    // };
 
     const renderSection = () => {
         switch (activeSection) {

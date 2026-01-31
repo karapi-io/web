@@ -17,6 +17,16 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
+      /* Hostinger-style typography scale for KarAPI dashboard (use with text-page-title, etc.) */
+      fontSize: {
+        'page-title': ['22px', { lineHeight: '1.3', letterSpacing: '-0.02em' }],
+        'section-title': ['18px', { lineHeight: '1.35', letterSpacing: '-0.01em' }],
+        'card-title': ['16px', { lineHeight: '1.4' }],
+        'body': ['14px', { lineHeight: '1.5' }],
+        'body-sm': ['13px', { lineHeight: '1.45' }],
+        'caption': ['12px', { lineHeight: '1.4' }],
+        'helper': ['10px', { lineHeight: '1.35', letterSpacing: '0.05em' }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
