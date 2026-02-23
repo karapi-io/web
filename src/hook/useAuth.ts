@@ -11,7 +11,9 @@ import {
 export function useAuth() {
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: RootState) => state.auth.user);
+    const userProfile = useSelector((state: RootState) => state.auth.userProfile);
     const isLoading = useSelector((state: RootState) => state.auth.isLoading);
+    const userProfileLoading = useSelector((state: RootState) => state.auth.userProfileLoading);
 
     const signInWithPassword = useCallback(
         (email: string, password: string) => dispatch(signInWithPasswordThunk({ email, password })).unwrap(),
@@ -31,6 +33,8 @@ export function useAuth() {
         isAuthenticated: !!user,
         userEmail: user?.email ?? null,
         user,
+        userProfile,
+        userProfileLoading,
         isLoading,
         signInWithPassword,
         signInWithOAuth,

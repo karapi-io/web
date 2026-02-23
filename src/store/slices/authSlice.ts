@@ -1,15 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../../lib/supabase";
+import { fetchBootstrap, type UserAccountInfo } from "../../lib/api";
 
 interface AuthState {
     user: User | null;
+    userProfile: UserAccountInfo | null;
     isLoading: boolean;
+    userProfileLoading: boolean;
 }
 
 const initialState: AuthState = {
     user: null,
+    userProfile: null,
     isLoading: true,
+    userProfileLoading: false,
 };
 
 export const signInWithPassword = createAsyncThunk(
@@ -50,21 +55,47 @@ const authSlice = createSlice({
     reducers: {
         setUser: (state, action: { payload: User | null }) => {
             state.user = action.payload;
+            if (!action.payload) state.userProfile = null;
         },
         setLoading: (state, action: { payload: boolean }) => {
             state.isLoading = action.payload;
         },
+        setUserProfile: (state, action: { payload: UserAccountInfo | null }) => {
+            state.userProfile = action.payload;
+        },
+        setUserProfileLoading: (state, action: { payload: boolean }) => {
+            state.userProfileLoading = action.payload;
+        },
     },
 });
 
-export const { setUser, setLoading } = authSlice.actions;
+export const { setUser, setLoading, setUserProfile, setUserProfileLoading } = authSlice.actions;
 export default authSlice.reducer;
 
-export function initAuthListener(dispatch: (action: { type: string; payload?: User | null | boolean }) => void) {
+async function syncUserProfile(
+    accessToken: string,
+    dispatch: (action: { type: string; payload?: User | null | boolean | UserAccountInfo }) => void
+) {
+    dispatch(setUserProfileLoading(true));
+    try {
+        const profile = await fetchBootstrap(accessToken);
+        dispatch(setUserProfile(profile));
+    } catch (err) {
+        console.error("Bootstrap (auth/bootstrap) failed:", err);
+        dispatch(setUserProfile(null));
+    } finally {
+        dispatch(setUserProfileLoading(false));
+    }
+}
+
+export function initAuthListener(dispatch: (action: { type: string; payload?: User | null | boolean | UserAccountInfo }) => void) {
     supabase.auth.getSession()
         .then(({ data: { session } }) => {
             dispatch(setUser(session?.user ?? null));
             dispatch(setLoading(false));
+            if (session?.user && session.access_token) {
+                syncUserProfile(session.access_token, dispatch);
+            }
         })
         .catch((err) => {
             console.error("Supabase getSession error:", err);
@@ -75,6 +106,9 @@ export function initAuthListener(dispatch: (action: { type: string; payload?: Us
         data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
         dispatch(setUser(session?.user ?? null));
+        if (session?.user && session.access_token) {
+            syncUserProfile(session.access_token, dispatch);
+        }
     });
 
     return () => subscription.unsubscribe();
